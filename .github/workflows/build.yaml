@@ -14,6 +14,10 @@ env:
   rpm_release: 1
 
 jobs:
+  build-matrix:
+    strategy:
+      matrix:
+        build_runtime: [linux-x64]
   build:
     runs-on: ubuntu-latest
     permissions:
@@ -22,7 +26,6 @@ jobs:
       
     env:
       build_configuration: Release
-      build_runtime: linux-x64
       build_framework: net8.0
     
     steps:
@@ -39,3 +42,16 @@ jobs:
     - name: dotnet build
       run: dotnet build
       
+    - name: dotnet publish
+      run: dotnet publish --configuration ${{ env.build_configuration }} --runtime ${{ matrix.build_runtime }} --framework ${{ env.build_framework }} --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=false -p:PublishReadyToRun=false -p:Version=${{ env.version }} -p:PackageVersion=${{ env.version }} --output publish
+
+    - name: Set execute permissoins
+      run: |
+        cd "${{ github.workspace }}/publish/"
+        chmod +x ProcessTracker
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: build
+        path: ${{ github.workspace }}/publish
