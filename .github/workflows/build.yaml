@@ -14,7 +14,7 @@ env:
   rpm_release: 1
 
 jobs:
-  build-matrix:
+  build:
     strategy:
       matrix:
         build_runtime: 
@@ -65,7 +65,7 @@ jobs:
 
   win:
     runs-on: ubuntu-latest
-    needs: build-matrix
+    needs: build
 
     steps:
     - name: Create folder structure
@@ -95,7 +95,7 @@ jobs:
 
   tarball:
     runs-on: ubuntu-latest
-    needs: build-matrix
+    needs: build
 
     steps:
     - name: Create folder structure
