@@ -33,7 +33,7 @@ namespace ProcessTrackerService.Infrastructure.Repository
         public async Task<List<TagsReportViewModel>> GetTagsReport(string tagName, DateTime? startDate, DateTime? endDate, string format)
         {
             // Get session from the database and perform filters
-            var summary = _dbContext.TagSessionSummary.Where(x => !x.Tag.Inactive);
+            var summary = _dbContext.TagSessionSummary.AsQueryable();
             if (!string.IsNullOrEmpty(tagName))
                 summary = summary.Where(x => x.Tag.Name.ToLower().Equals(tagName.ToLower()));
             if (startDate != null)
