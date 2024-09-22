@@ -17,8 +17,9 @@ jobs:
   build-matrix:
     strategy:
       matrix:
-        build_runtime: [linux-x64]
-  build:
+        build_runtime: 
+          - linux-x64
+    
     runs-on: ubuntu-latest
     permissions:
       checks: write
