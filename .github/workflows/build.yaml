@@ -1,0 +1,41 @@
+name: build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: 
+      - main
+  pull_request:
+
+env:
+  version: "1.0.${{ github.run_number }}${{ github.run_attempt }}"
+  package_name: ProcessTracker
+  rpm_arch: x86_64
+  rpm_release: 1
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      contents: write
+      
+    env:
+      build_configuration: Release
+      build_runtime: linux-x64
+      build_framework: net8.0
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8
+      
+    - name: dotnet restore
+      run: dotnet restore
+
+    - name: dotnet build
+      run: dotnet build
+      
