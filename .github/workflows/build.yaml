@@ -81,6 +81,7 @@ jobs:
       run: |
         cd "${{ github.workspace }}/"
         find ./build -name "*.pdb" -type f -delete
+        find ./build -name "*.service" -type f -delete
         zip -r ./publish/${{ env.package_name }}_win-x64_${{ env.version }}.zip ./build/*
 
     - name: Upload artifact
