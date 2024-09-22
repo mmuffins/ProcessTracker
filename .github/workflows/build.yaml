@@ -131,7 +131,7 @@ jobs:
   release:
     if: ${{ github.event_name != 'pull_request'  && github.ref_name == 'main' }}
     runs-on: ubuntu-latest
-    needs: [win]
+    needs: [win,tarball]
     permissions:
       contents: write
 
