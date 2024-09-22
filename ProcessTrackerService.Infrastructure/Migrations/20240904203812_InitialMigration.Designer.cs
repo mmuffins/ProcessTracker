@@ -11,8 +11,8 @@ using ProcessTrackerService.Infrastructure.Data;
 namespace ProcessTrackerService.Infrastructure.Migrations
 {
     [DbContext(typeof(PTServiceContext))]
-    [Migration("20240815233434_TagSession")]
-    partial class TagSession
+    [Migration("20240904203812_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -56,6 +56,25 @@ namespace ProcessTrackerService.Infrastructure.Migrations
                     b.ToTable("Filters");
                 });
 
+            modelBuilder.Entity("ProcessTrackerService.Core.Entities.Setting", b =>
+                {
+                    b.Property<string>("SettingName")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("SettingName");
+
+                    b.ToTable("Settings");
+                });
+
             modelBuilder.Entity("ProcessTrackerService.Core.Entities.Tag", b =>
                 {
                     b.Property<int>("Id")
@@ -91,6 +110,9 @@ namespace ProcessTrackerService.Infrastructure.Migrations
                     b.Property<DateTime?>("EndTime")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime>("LastUpdateTime")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("TEXT");
 
@@ -102,6 +124,31 @@ namespace ProcessTrackerService.Infrastructure.Migrations
                     b.HasIndex("TagId");
 
                     b.ToTable("TagSessions");
+                });
+
+            modelBuilder.Entity("ProcessTrackerService.Core.Entities.TagSessionSummary", b =>
+                {
+                    b.Property<int>("SummaryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Day")
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("Seconds")
+                        .HasColumnType("REAL");
+
+                    b.Property<int>("TagId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("SummaryId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("TagSessionSummary");
                 });
 
             modelBuilder.Entity("ProcessTrackerService.Core.Entities.Filter", b =>
@@ -126,9 +173,22 @@ namespace ProcessTrackerService.Infrastructure.Migrations
                     b.Navigation("Tag");
                 });
 
+            modelBuilder.Entity("ProcessTrackerService.Core.Entities.TagSessionSummary", b =>
+                {
+                    b.HasOne("ProcessTrackerService.Core.Entities.Tag", "Tag")
+                        .WithMany("TagSessionSummaries")
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tag");
+                });
+
             modelBuilder.Entity("ProcessTrackerService.Core.Entities.Tag", b =>
                 {
                     b.Navigation("Filters");
+
+                    b.Navigation("TagSessionSummaries");
 
                     b.Navigation("TagSessions");
                 });

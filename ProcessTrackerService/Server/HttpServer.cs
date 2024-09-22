@@ -1,11 +1,12 @@
 ﻿using Azure;
 using MediatR;
-using Newtonsoft.Json;
 using ProcessTrackerService.Core.Dto.Requests;
 using ProcessTrackerService.Core.Dto.Responses;
 using ProcessTrackerService.Core.Helpers;
 using System.Net;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ProcessTrackerService.Server
 {
@@ -62,6 +63,11 @@ namespace ProcessTrackerService.Server
                 HttpListenerRequest req = ctx.Request;
                 ctx.Response.ContentType = "application/json";
 
+                var serializerOptions = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
                 try
                 {
                     _logger.LogInformation(req.Url.ToString() + "   at: {time}", DateTimeOffset.Now);
@@ -103,12 +109,12 @@ namespace ProcessTrackerService.Server
                     }
                     else if ((req.HttpMethod == "POST") && (req.Url.AbsolutePath == "/api/tag/add"))
                     {
-                        var response = await _mediator.Send(JsonConvert.DeserializeObject<CreateTagRequest>(requestBody));
+                        var response = await _mediator.Send(JsonSerializer.Deserialize<CreateTagRequest>(requestBody, serializerOptions));
                         Respond(ctx, response);
                     }
                     else if ((req.HttpMethod == "PUT") && (req.Url.AbsolutePath == "/api/tag/toggleactive"))
                     {
-                        var response = await _mediator.Send(JsonConvert.DeserializeObject<TagToggleRequest>(requestBody));
+                        var response = await _mediator.Send(JsonSerializer.Deserialize<TagToggleRequest>(requestBody, serializerOptions));
                         Respond(ctx, response);
                     }
 
@@ -148,32 +154,32 @@ namespace ProcessTrackerService.Server
                     }
                     else if ((req.HttpMethod == "POST") && (req.Url.AbsolutePath == "/api/filter/add"))
                     {
-                        var response = await _mediator.Send(JsonConvert.DeserializeObject<CreateFilterRequest>(requestBody));
+                        var response = await _mediator.Send(JsonSerializer.Deserialize<CreateFilterRequest>(requestBody, serializerOptions));
                         Respond(ctx, response);
                     }
                     else if ((req.HttpMethod == "PUT") && (req.Url.AbsolutePath == "/api/filter/toggleactive"))
                     {
-                        var response = await _mediator.Send(JsonConvert.DeserializeObject<FilterToggleRequest>(requestBody));
+                        var response = await _mediator.Send(JsonSerializer.Deserialize<FilterToggleRequest>(requestBody, serializerOptions));
                         Respond(ctx, response);
                     }
                     else if ((req.HttpMethod == "POST") && (req.Url.AbsolutePath == "/api/report"))
                     {
-                        var response = await _mediator.Send(JsonConvert.DeserializeObject<ReportRequest>(requestBody));
+                        var response = await _mediator.Send(JsonSerializer.Deserialize<ReportRequest>(requestBody, serializerOptions));
                         Respond(ctx, response);
                     }
                     else if ((req.HttpMethod == "POST") && (req.Url.AbsolutePath == "/api/Summarize"))
                     {
-                        var response = await _mediator.Send(JsonConvert.DeserializeObject<SummarizeRequest>(requestBody));
+                        var response = await _mediator.Send(JsonSerializer.Deserialize<SummarizeRequest>(requestBody, serializerOptions));
                         Respond(ctx, response);
                     }
                     else if ((req.HttpMethod == "POST") && (req.Url.AbsolutePath == "/api/session/add"))
                     {
-                        var response = await _mediator.Send(JsonConvert.DeserializeObject<SessionAddRequest>(requestBody));
+                        var response = await _mediator.Send(JsonSerializer.Deserialize<SessionAddRequest>(requestBody, serializerOptions));
                         Respond(ctx, response);
                     }
                     else if ((req.HttpMethod == "DELETE") && (req.Url.AbsolutePath == "/api/session/remove"))
                     {
-                        var response = await _mediator.Send(JsonConvert.DeserializeObject<SessionRemoveRequest>(requestBody));
+                        var response = await _mediator.Send(JsonSerializer.Deserialize<SessionRemoveRequest>(requestBody, serializerOptions));
                         Respond(ctx, response);
                     }
                     else if ((req.HttpMethod == "GET") && (req.Url.AbsolutePath == "/api/tracking"))
@@ -211,7 +217,14 @@ namespace ProcessTrackerService.Server
         {
             ctx.Response.StatusCode = (int)HttpStatusCode.OK;
             ctx.Response.StatusDescription = ((HttpStatusCode)ctx.Response.StatusCode).ToString();
-            byte[] buf = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response, Formatting.Indented));
+
+            var options = new JsonSerializerOptions { 
+                WriteIndented = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.Never,
+                IncludeFields = true,
+            };
+            byte[] buf = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response, options));
+
             ctx.Response.ContentLength64 = buf.Length;
             ctx.Response.OutputStream.Write(buf, 0, buf.Length);
         }

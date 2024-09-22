@@ -30,47 +30,10 @@ namespace ProcessTrackerService.Infrastructure.Repository
             return tags;
         }
 
-        //public async Task<List<TagsReportViewModel>> GetTagsReport(string tagName, DateTime? startDate, DateTime? endDate, string format)
-        //{
-        //    // Get session from the database and perform filters
-        //    var sessions = _dbContext.TagSessions.Where(x => !x.Tag.Inactive);
-        //    if (!string.IsNullOrEmpty(tagName))
-        //        sessions = sessions.Where(x => x.Tag.Name.ToLower().Equals(tagName.ToLower()));
-        //    if (startDate != null)
-        //        sessions = sessions.Where(x => x.StartTime >= startDate);
-        //    if (endDate != null)
-        //        sessions = sessions.Where(x => x.EndTime <= endDate);
-
-        //    sessions = sessions.Include(x => x.Tag);
-
-        //    List<TagsReportViewModel> vmList = new List<TagsReportViewModel>();
-        //    foreach (var tagSession in sessions.GroupBy(x => x.TagId))
-        //    {
-        //        // calculate session times of the tag by summing up total minutes each tag ran
-        //        TagsReportViewModel vm = new TagsReportViewModel();
-        //        vm.Name = tagSession.First().Tag.Name;
-
-        //        double totalMinutes = 0;
-        //        var tagSessionOrdered = tagSession.OrderBy(x => x.StartTime);
-        //        foreach (var session in tagSessionOrdered)
-        //        {
-        //            totalMinutes += ((session.EndTime.HasValue ? session.EndTime.Value : DateTime.Now) - session.StartTime).TotalMinutes;
-        //        }
-        //        var time = TimeSpan.FromMinutes(totalMinutes);
-        //        vm.TotalActiveTime = string.Format("{0}:{1:00}", (int)time.TotalHours, time.Minutes);
-        //        vm.FirstOccurence = tagSessionOrdered.First().StartTime.ToString(format);
-
-        //        var lastSession = tagSession.OrderByDescending(x => x.StartTime).First();
-        //        vm.LastOccurence = lastSession.LastUpdateTime.ToString(format);
-
-        //        vmList.Add(vm);
-        //    }
-        //    return vmList;
-        //}
         public async Task<List<TagsReportViewModel>> GetTagsReport(string tagName, DateTime? startDate, DateTime? endDate, string format)
         {
             // Get session from the database and perform filters
-            var summary = _dbContext.TagSessionSummary.Where(x => !x.Tag.Inactive);
+            var summary = _dbContext.TagSessionSummary.AsQueryable();
             if (!string.IsNullOrEmpty(tagName))
                 summary = summary.Where(x => x.Tag.Name.ToLower().Equals(tagName.ToLower()));
             if (startDate != null)
