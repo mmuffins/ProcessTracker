@@ -100,33 +100,32 @@ jobs:
     steps:
     - name: Create folder structure
       run: |
-        mkdir -p "${{ github.workspace }}/publish/tarball"
+        cd "${{ github.workspace }}"
+        mkdir -p build
+        mkdir -p publish
 
     - name: Get artifacts
       uses: actions/download-artifact@v4
       with:
         name: build-linux-x64
-        path: ${{ github.workspace }}/publish
+        path: ${{ github.workspace }}/build
 
     - name: Set execute permissoins
       run: |
-        cd "${{ github.workspace }}/publish/"
+        cd "${{ github.workspace }}/build/"
         chmod +x ProcessTrackerService
 
     - name: Create tarball
       run: |
-        cd "${{ github.workspace }}/publish/"
+        cd "${{ github.workspace }}/build/"
         find . -name "*.pdb" -type f -delete
-        mv * tarball
-        cd tarball
-        tar -czvf ${{ env.package_name }}_${{ env.version }}_linux-x64.tar.gz *
-        rm -r hass-nowplaying
+        tar -czvf ../publish/${{ env.package_name }}_${{ env.version }}_linux-x64.tar.gz *
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: tarball
-        path: ${{ github.workspace }}/publish/tarball/${{ env.package_name }}_${{ env.version }}_linux-x64.tar.gz
+        path: ${{ github.workspace }}/publish/
 
   release:
     if: ${{ github.event_name != 'pull_request'  && github.ref_name == 'main' }}
