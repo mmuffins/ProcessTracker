@@ -7,10 +7,27 @@ using ProcessTrackerService.Infrastructure;
 using ProcessTrackerService.Infrastructure.Data;
 using ProcessTrackerService.Infrastructure.Repository;
 using ProcessTrackerService.Server;
+using System.IO;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-builder.Services.AddDbContext<PTServiceContext>(options => options.UseSqlite(connectionString: builder.Configuration.GetConnectionString("ProcessDB") ?? "", b => b.MigrationsAssembly("ProcessTrackerService.Infrastructure")), ServiceLifetime.Transient);
+var dbPath = builder.Configuration.GetConnectionString("ProcessDB") ?? "";
+var dbFilePath = dbPath.Split('=')[1];
+
+builder.Services.AddDbContext<PTServiceContext>(options =>
+    options.UseSqlite(dbPath, b => b.MigrationsAssembly("ProcessTrackerService.Infrastructure")),
+    ServiceLifetime.Transient);
+
+// Create the DB if it doesn't exist when starting the application
+if (!File.Exists(dbFilePath))
+{
+    Console.WriteLine("Database not found. Creating a new database...");
+    using (var scope = builder.Services.BuildServiceProvider().CreateScope())
+    {
+        var context = scope.ServiceProvider.GetRequiredService<PTServiceContext>();
+        context.Database.EnsureCreated();
+    }
+}
 
 builder.Services.AddHostedService<Worker>();
 
@@ -25,7 +42,7 @@ builder.Services.AddScoped(typeof(IAsyncRepository<>), typeof(EfRepository<>));
 
 builder.ConfigureContainer(new AutofacServiceProviderFactory(), builder =>
 {
-    //builder.RegisterModule(new CoreModule());
+    // builder.RegisterModule(new CoreModule());
     builder.RegisterModule(new InfrastructureModule());
 });
 
