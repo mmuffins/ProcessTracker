@@ -11,7 +11,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 
 var builder = Host.CreateApplicationBuilder(args);
-builder.Logging.AddConsole();
 
 var configFilePath = GetConfigFilePath();
 
@@ -27,19 +26,22 @@ builder.Services.AddDbContext<PTServiceContext>(options =>
 // Create the DB if it doesn't exist when starting the application
 if (!File.Exists(dbPath))
 {
-    var logger = builder.Services.BuildServiceProvider().GetRequiredService<ILogger<Program>>();
+    builder.Logging.AddConsole();
+    var serviceProvider = builder.Services.BuildServiceProvider();
+    var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
     logger.LogWarning("Database not found. Creating a new database...");
     try
     {
-        using (var scope = builder.Services.BuildServiceProvider().CreateScope())
+        using (var scope = serviceProvider.CreateScope())
         {
             var context = scope.ServiceProvider.GetRequiredService<PTServiceContext>();
-            context.Database.EnsureCreated();
+            context.Database.Migrate();
         }
     }
     catch (Exception ex)
     {
-        throw new Exception("An error occurred while creating the database.", ex);
+        logger.LogCritical(ex, "An error occurred while creating the database.");
+        throw;
     }
 }
 
@@ -49,8 +51,7 @@ if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
 {
     builder.Services.AddSystemd();
 }
-
-if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 {
     builder.Services.AddWindowsService(option => option.ServiceName = "Process Tracker Service");
 }
