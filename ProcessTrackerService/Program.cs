@@ -11,34 +11,49 @@ using System.IO;
 using System.Runtime.InteropServices;
 
 var builder = Host.CreateApplicationBuilder(args);
+builder.Logging.AddConsole();
 
 var configFilePath = GetConfigFilePath();
 
 builder.Configuration
     .AddJsonFile(configFilePath, optional: false, reloadOnChange: true);
 
-var dbPath = builder.Configuration.GetConnectionString("ProcessDB") ?? "";
-var dbFilePath = dbPath.Split('=')[1];
+var dbPath = builder.Configuration.GetSection("AppSettings:DatabasePath").Value ?? "";
 
 builder.Services.AddDbContext<PTServiceContext>(options =>
-    options.UseSqlite(dbPath, b => b.MigrationsAssembly("ProcessTrackerService.Infrastructure")),
+    options.UseSqlite($"Data Source={dbPath}", b => b.MigrationsAssembly("ProcessTrackerService.Infrastructure")),
     ServiceLifetime.Transient);
 
 // Create the DB if it doesn't exist when starting the application
-if (!File.Exists(dbFilePath))
+if (!File.Exists(dbPath))
 {
-    Console.WriteLine("Database not found. Creating a new database...");
-    using (var scope = builder.Services.BuildServiceProvider().CreateScope())
+    var logger = builder.Services.BuildServiceProvider().GetRequiredService<ILogger<Program>>();
+    logger.LogWarning("Database not found. Creating a new database...");
+    try
     {
-        var context = scope.ServiceProvider.GetRequiredService<PTServiceContext>();
-        context.Database.EnsureCreated();
+        using (var scope = builder.Services.BuildServiceProvider().CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<PTServiceContext>();
+            context.Database.EnsureCreated();
+        }
+    }
+    catch (Exception ex)
+    {
+        throw new Exception("An error occurred while creating the database.", ex);
     }
 }
 
 builder.Services.AddHostedService<Worker>();
 
-builder.Services.AddSystemd();
-builder.Services.AddWindowsService(option => option.ServiceName = "Process Tracker Service");
+if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+{
+    builder.Services.AddSystemd();
+}
+
+if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+{
+    builder.Services.AddWindowsService(option => option.ServiceName = "Process Tracker Service");
+}
 
 var coreassembly = AppDomain.CurrentDomain.Load("ProcessTrackerService.Core");
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(coreassembly));
@@ -61,7 +76,8 @@ string GetConfigFilePath()
     {
         return GetConfigFilePathLinux();
     }
-    else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+    
+    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
     {
         return GetConfigFilePathWindows();
     }
