@@ -29,17 +29,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Database\processtracker.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Database\processtracker.db-shm">
+    <Content Update="HTTP Server.postman_collection.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-    <None Update="Database\processtracker.db-wal">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="ProcessTracker.service">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
   </ItemGroup>
 </Project>
