@@ -1,10 +1,12 @@
 ﻿[Unit]
-Description=process tracker service
+Description=Process Tracker Service
 
 [Service]
 Type=notify
-WorkingDirectory=/home/ubuntu/ProcessTrackerService
-ExecStart=/home/ubuntu/ProcessTrackerService/ProcessTrackerService
+WorkingDirectory=/usr/share/processtracker
+ExecStart=/usr/bin/processtracker
+Restart=on-failure
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
