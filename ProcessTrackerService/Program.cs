@@ -1,5 +1,3 @@
-using Autofac;
-using Autofac.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using ProcessTrackerService;
 using ProcessTrackerService.Core.Interfaces;
@@ -7,7 +5,6 @@ using ProcessTrackerService.Infrastructure;
 using ProcessTrackerService.Infrastructure.Data;
 using ProcessTrackerService.Infrastructure.Repository;
 using ProcessTrackerService.Server;
-using System.IO;
 using System.Runtime.InteropServices;
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -56,20 +53,17 @@ else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
     builder.Services.AddWindowsService(option => option.ServiceName = "Process Tracker Service");
 }
 
-var coreassembly = AppDomain.CurrentDomain.Load("ProcessTrackerService.Core");
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(coreassembly));
+var coreAssembly = AppDomain.CurrentDomain.Load("ProcessTrackerService.Core");
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(coreAssembly));
 
 builder.Services.AddSingleton<IHttpServer, HttpServer>();
 builder.Services.AddScoped(typeof(IAsyncRepository<>), typeof(EfRepository<>));
 
-builder.ConfigureContainer(new AutofacServiceProviderFactory(), builder =>
-{
-    builder.RegisterModule(new InfrastructureModule());
-});
+// Call method to configure infrastructure services
+InfrastructureModule.RegisterServices(builder.Services);
 
 var host = builder.Build();
 host.Run();
-
 
 string GetConfigFilePath()
 {
@@ -77,7 +71,7 @@ string GetConfigFilePath()
     {
         return GetConfigFilePathLinux();
     }
-    
+
     if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
     {
         return GetConfigFilePathWindows();
