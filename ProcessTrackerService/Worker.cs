@@ -11,15 +11,15 @@ namespace ProcessTrackerService
         private readonly IHttpServer _httpServer;
         private readonly IMediator _mediator;
         private readonly IConfiguration _configuration;
-        private readonly IHostApplicationLifetime _hostApplicationLifetime;
+        private readonly IServiceProvider _serviceProvider;
 
-        public Worker(ILogger<Worker> logger, IHttpServer httpServer, IMediator mediator, IConfiguration configuration, IHostApplicationLifetime hostApplicationLifetime)
+        public Worker(ILogger<Worker> logger, IHttpServer httpServer, IMediator mediator, IConfiguration configuration, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _httpServer = httpServer;
             _mediator = mediator;
             _configuration = configuration;
-            _hostApplicationLifetime = hostApplicationLifetime;
+            _serviceProvider = serviceProvider;
 
             // Register the async method to be called on application stopping
             //_hostApplicationLifetime.ApplicationStopping.Register(OnStoppingAsync);
@@ -37,12 +37,17 @@ namespace ProcessTrackerService
             try
             {
                 _ = Task.Run(async () => await StartServer(stoppingToken), stoppingToken);
-                //await StartServer(stoppingToken);
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
                     _logger.LogInformation("Checking processes at: {time}", DateTimeOffset.Now);
-                    await _mediator.Send(new TrackProcessRequest());
+
+                    using (var scope = _serviceProvider.CreateScope())
+                    {
+                        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+                        await mediator.Send(new TrackProcessRequest());
+                    }
+
                     await Task.Delay(AppSettings.ProcessCheckDelay * 1000, stoppingToken);
                 }
             }

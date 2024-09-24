@@ -7,5 +7,6 @@
         public int CushionDelay { get; set; }
         public string DateTimeFormat { get; set; }
         public string DateFormat { get; set; }
+        public string DatabasePath { get; set; }
     }
 }

@@ -15,15 +15,17 @@ namespace ProcessTrackerService.Server
         private readonly ILogger<HttpServer> _logger;
         private readonly IMediator _mediator;
         private readonly IConfiguration _configuration;
+        private readonly IServiceProvider _serviceProvider;
         private HttpListener listener;
         private readonly string url;
         bool runServer = true;
 
-        public HttpServer(ILogger<HttpServer> logger, IMediator mediator, IConfiguration configuration)
+        public HttpServer(ILogger<HttpServer> logger, IMediator mediator, IConfiguration configuration, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _mediator = mediator;
             _configuration = configuration;
+            _serviceProvider = serviceProvider;
             url = "http://localhost:" + AppSettings.HttpPort + "/";
         }
         private AppSettings AppSettings
@@ -77,6 +79,10 @@ namespace ProcessTrackerService.Server
                     {
                         requestBody = reader.ReadToEnd();
                     }
+
+                    using var scope = _serviceProvider.CreateScope();
+                    var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
                     // If `shutdown` url requested w/ POST, then shutdown the server after serving the page
                     if ((req.HttpMethod == "POST") && (req.Url.AbsolutePath == "/shutdown"))
                     {
@@ -89,14 +95,15 @@ namespace ProcessTrackerService.Server
                     {
                         GenericResponse response = null;
                         if (req.QueryString.HasKeys() && !string.IsNullOrEmpty(req.QueryString["name"]))
-                            response = await _mediator.Send(new GetTagsRequest { Name = req.QueryString["name"] });
+                            response = await mediator.Send(new GetTagsRequest { Name = req.QueryString["name"] });
                         else
-                            response = await _mediator.Send(new GetTagsRequest());
+                            response = await mediator.Send(new GetTagsRequest());
+
                         Respond(ctx, response);
                     }
                     else if ((req.HttpMethod == "GET") && (req.Url.AbsolutePath == "/api/tag/active"))
                     {
-                        var response = await _mediator.Send(new GetTagsRequest { Inactive = false });
+                        var response = await mediator.Send(new GetTagsRequest { Inactive = false });
                         Respond(ctx, response);
                     }
                     else if ((req.HttpMethod == "DELETE") && (req.Url.AbsolutePath == "/api/tag"))
@@ -104,17 +111,17 @@ namespace ProcessTrackerService.Server
                         string name = "";
                         if (req.QueryString.HasKeys() && !string.IsNullOrEmpty(req.QueryString["name"]))
                             name = req.QueryString["name"];
-                        var response = await _mediator.Send(new DeleteTagRequest { Name = name });
+                        var response = await mediator.Send(new DeleteTagRequest { Name = name });
                         Respond(ctx, response);
                     }
                     else if ((req.HttpMethod == "POST") && (req.Url.AbsolutePath == "/api/tag/add"))
                     {
-                        var response = await _mediator.Send(JsonSerializer.Deserialize<CreateTagRequest>(requestBody, serializerOptions));
+                        var response = await mediator.Send(JsonSerializer.Deserialize<CreateTagRequest>(requestBody, serializerOptions));
                         Respond(ctx, response);
                     }
                     else if ((req.HttpMethod == "PUT") && (req.Url.AbsolutePath == "/api/tag/toggleactive"))
                     {
-                        var response = await _mediator.Send(JsonSerializer.Deserialize<TagToggleRequest>(requestBody, serializerOptions));
+                        var response = await mediator.Send(JsonSerializer.Deserialize<TagToggleRequest>(requestBody, serializerOptions));
                         Respond(ctx, response);
                     }
 
@@ -127,9 +134,9 @@ namespace ProcessTrackerService.Server
                         else
                         {
                             if (!string.IsNullOrEmpty(req.QueryString["id"]))
-                                response = await _mediator.Send(new GetFilterRequest { FilterID = Convert.ToInt32(req.QueryString["id"]) });
+                                response = await mediator.Send(new GetFilterRequest { FilterID = Convert.ToInt32(req.QueryString["id"]) });
                             else
-                                response = await _mediator.Send(new GetFilterRequest() { TagName = req.QueryString["name"] });
+                                response = await mediator.Send(new GetFilterRequest() { TagName = req.QueryString["name"] });
                             Respond(ctx, response);
                         }
                     }
@@ -140,7 +147,7 @@ namespace ProcessTrackerService.Server
                             Respond404(ctx);
                         else
                         {
-                            response = await _mediator.Send(new GetFilterRequest() { TagName = req.QueryString["name"], inactive = false });
+                            response = await mediator.Send(new GetFilterRequest() { TagName = req.QueryString["name"], inactive = false });
                             Respond(ctx, response);
                         }
                     }
@@ -149,42 +156,42 @@ namespace ProcessTrackerService.Server
                         int id = 0;
                         if (req.QueryString.HasKeys() && !string.IsNullOrEmpty(req.QueryString["id"]))
                             id = Convert.ToInt32(req.QueryString["id"]);
-                        var response = await _mediator.Send(new DeleteFilterRequest { FilterID = id });
+                        var response = await mediator.Send(new DeleteFilterRequest { FilterID = id });
                         Respond(ctx, response);
                     }
                     else if ((req.HttpMethod == "POST") && (req.Url.AbsolutePath == "/api/filter/add"))
                     {
-                        var response = await _mediator.Send(JsonSerializer.Deserialize<CreateFilterRequest>(requestBody, serializerOptions));
+                        var response = await mediator.Send(JsonSerializer.Deserialize<CreateFilterRequest>(requestBody, serializerOptions));
                         Respond(ctx, response);
                     }
                     else if ((req.HttpMethod == "PUT") && (req.Url.AbsolutePath == "/api/filter/toggleactive"))
                     {
-                        var response = await _mediator.Send(JsonSerializer.Deserialize<FilterToggleRequest>(requestBody, serializerOptions));
+                        var response = await mediator.Send(JsonSerializer.Deserialize<FilterToggleRequest>(requestBody, serializerOptions));
                         Respond(ctx, response);
                     }
                     else if ((req.HttpMethod == "POST") && (req.Url.AbsolutePath == "/api/report"))
                     {
-                        var response = await _mediator.Send(JsonSerializer.Deserialize<ReportRequest>(requestBody, serializerOptions));
+                        var response = await mediator.Send(JsonSerializer.Deserialize<ReportRequest>(requestBody, serializerOptions));
                         Respond(ctx, response);
                     }
                     else if ((req.HttpMethod == "POST") && (req.Url.AbsolutePath == "/api/Summarize"))
                     {
-                        var response = await _mediator.Send(JsonSerializer.Deserialize<SummarizeRequest>(requestBody, serializerOptions));
+                        var response = await mediator.Send(JsonSerializer.Deserialize<SummarizeRequest>(requestBody, serializerOptions));
                         Respond(ctx, response);
                     }
                     else if ((req.HttpMethod == "POST") && (req.Url.AbsolutePath == "/api/session/add"))
                     {
-                        var response = await _mediator.Send(JsonSerializer.Deserialize<SessionAddRequest>(requestBody, serializerOptions));
+                        var response = await mediator.Send(JsonSerializer.Deserialize<SessionAddRequest>(requestBody, serializerOptions));
                         Respond(ctx, response);
                     }
                     else if ((req.HttpMethod == "DELETE") && (req.Url.AbsolutePath == "/api/session/remove"))
                     {
-                        var response = await _mediator.Send(JsonSerializer.Deserialize<SessionRemoveRequest>(requestBody, serializerOptions));
+                        var response = await mediator.Send(JsonSerializer.Deserialize<SessionRemoveRequest>(requestBody, serializerOptions));
                         Respond(ctx, response);
                     }
                     else if ((req.HttpMethod == "GET") && (req.Url.AbsolutePath == "/api/tracking"))
                     {
-                        var response = await _mediator.Send(new GetSettingRequest { Setting = Core.Entities.SettingEnum.TrackingPaused });
+                        var response = await mediator.Send(new GetSettingRequest { Setting = Core.Entities.SettingEnum.TrackingPaused });
                         Respond(ctx, response);
                     }
                     else if ((req.HttpMethod == "PUT") && (req.Url.AbsolutePath == "/api/tracking"))
@@ -193,7 +200,7 @@ namespace ProcessTrackerService.Server
                             Respond404(ctx);
                         else
                         {
-                            var response = await _mediator.Send(new AddUpdateSettingRequest() { Setting = Core.Entities.SettingEnum.TrackingPaused, value = req.QueryString["value"] });
+                            var response = await mediator.Send(new AddUpdateSettingRequest() { Setting = Core.Entities.SettingEnum.TrackingPaused, value = req.QueryString["value"] });
                             Respond(ctx, response);
                         }
                     }

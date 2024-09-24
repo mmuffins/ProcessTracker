@@ -1,19 +1,14 @@
-﻿using Autofac;
+﻿using Microsoft.Extensions.DependencyInjection;
 using ProcessTrackerService.Core.Interfaces.Repository;
 using ProcessTrackerService.Infrastructure.Repository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ProcessTrackerService.Infrastructure
 {
-    public class InfrastructureModule : Module
+    public static class InfrastructureModule
     {
-        protected override void Load(ContainerBuilder builder)
+        public static void RegisterServices(IServiceCollection services)
         {
-            builder.RegisterType<TagSessionRepository>().As<ITagSessionRepository>().InstancePerLifetimeScope();
+            services.AddScoped<ITagSessionRepository, TagSessionRepository>();
         }
     }
 }
