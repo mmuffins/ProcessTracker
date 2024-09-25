@@ -5,10 +5,11 @@ Summary: A tool to track and report how long process were running.
 License: MIT
 BuildArch: %{buildarch}
 
-BuildRequires: systemd
+# BuildRequires: systemd-rpm-macros
 
 %global name_lower processtracker
 %global __strip /bin/true
+%global _unitdir %{_prefix}/lib/systemd/system  # workaround for missing systemd rpm macros package on github agents
 
 %description
 A tool to track and report how long process were running.
