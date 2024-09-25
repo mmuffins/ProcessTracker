@@ -161,7 +161,6 @@ jobs:
       run: |
         cd "${{ github.workspace }}/packaging/rpm"
 
-        cp "${{ github.workspace }}/appsettings.json" "./SOURCES"
         cp "${{ github.workspace }}/README.md" "./SOURCES"
         cp "${{ github.workspace }}/LICENSE" "./SOURCES"
 
