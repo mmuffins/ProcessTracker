@@ -9,7 +9,8 @@ BuildArch: %{buildarch}
 
 %global name_lower processtracker
 %global __strip /bin/true
-%global _unitdir %{_prefix}/lib/systemd/system  # workaround for missing systemd rpm macros package on github agents
+# workaround for missing systemd rpm macros package on github agents
+%global _unitdir %{_prefix}/lib/systemd/system
 
 %description
 A tool to track and report how long process were running.
