@@ -23,7 +23,7 @@ sc delete "Process Tracker"
 ```
 
 ## Configuration
-### Config file
+### Config file location
 The application is configured using a `appsettings.json` file. The application tries to locate the configuration file in different locations depending on the operating system. The search order is as follows:
 
 #### Linux:
@@ -35,6 +35,18 @@ The application is configured using a `appsettings.json` file. The application t
 #### Windows:
 - The path configured in the `PROCESSTRACKER_APPSETTINGS_PATH` environment variable, if it is set and points to a valid file.
 - `C:\ProgramData\ProcessTracker\appsettings.json` as the default if the environment variable is not set or does not point to a valid file.
+
+### Supported Properties
+The following options are supported in the configuration file:
+- `Logging` - Optional. Supports standard .net core logging settings, see https://learn.microsoft.com/en-us/aspnet/core/fundamentals/logging
+- `Appsettings`
+  - `HttpPort`: TCP port to listen on for incoming connections. Defaults to 8001.
+  - `DateTimeFormat`: Format for datetime strings throughout the application. Defaults to `yyyy-MM-dd HH:mm`.
+  - `DateFormat`: Format for date strings throughout the application. Defaults to `yyyy-MM-dd`.
+  - `ProcessCheckDelay`: Time in seconds between the state of running applications is checked. Defaults to 20.
+  - `CushionDelay`: Time in seconds that has to elapse after a process cannot be found before it is considered to be terminated.  Defaults to 60.
+  - `DatabasePath`: Path for the process tracker database defaults to `C:/ProgramData/ProcessTracker/processtracker.db` in windows and `/var/lib/processtracker/processtracker.db` in linux.
+
 
 # Database Migrations
 To apply migrations and create a new database run the following from the root folder of the solution.
