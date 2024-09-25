@@ -5,6 +5,8 @@ Summary: A tool to track and report how long process were running.
 License: MIT
 BuildArch: %{buildarch}
 
+BuildRequires: systemd-rpm-macros
+
 %global name_lower processtracker
 %global __strip /bin/true
 
