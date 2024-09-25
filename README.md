@@ -8,6 +8,13 @@ The application can either be executed interactively. Alternatively the followin
 ```powershell
 sc create "Process Tracker" binpath= "[Directory]\ProcessTrackerService.exe" start= auto
 ```
+### Linux
+#### Via rpm file
+To install the application via rpm file, download the latest version from the releases section and install it with
+```bash
+rpm -ivh ProcessTracker_linux-x86_<version>.rmp
+```
+
 
 ## Deletion
 ### Windows

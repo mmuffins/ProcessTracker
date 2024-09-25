@@ -156,7 +156,6 @@ jobs:
         name: build-linux-x64
         path: ${{ github.workspace }}/packaging/rpm/SOURCES
 
-
     - name: Move additional files
       run: |
         cd "${{ github.workspace }}/packaging/rpm"
@@ -175,6 +174,11 @@ jobs:
         jq '.AppSettings.DatabasePath = "/var/lib/processtracker/processtracker.db"' \
         appsettings.json > updated_appsettings.json && \
         mv updated_appsettings.json appsettings.json
+
+    - name: Build rpm file
+      run: |
+        cd "${{ github.workspace }}/packaging/rpm"
+        ls -al
 
     - name: Build rpm file
       run: |
