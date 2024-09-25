@@ -175,12 +175,6 @@ jobs:
         appsettings.json > updated_appsettings.json && \
         mv updated_appsettings.json appsettings.json
 
-    - name: debug
-      run: |
-        rpm --eval '%{_unitdir}'
-        cd "${{ github.workspace }}/packaging/rpm"
-        ls -alR
-
     - name: Build rpm file
       run: |
         mkdir -p "${{ github.workspace }}/publish"

@@ -12,7 +12,7 @@ sc create "Process Tracker" binpath= "[Directory]\ProcessTrackerService.exe" sta
 #### Via rpm file
 To install the application via rpm file, download the latest version from the releases section and install it with
 ```bash
-rpm -ivh ProcessTracker_linux-x86_<version>.rmp
+rpm -ivh ProcessTracker-<version>.x86_64.rmp
 ```
 
 
