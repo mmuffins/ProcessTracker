@@ -220,6 +220,12 @@ jobs:
       with:
         name: tarball
         path: ${{ github.workspace }}/publish
+        
+    - name: Get rpm
+      uses: actions/download-artifact@v4
+      with:
+        name: rpm
+        path: ${{ github.workspace }}/publish
 
     - name: Create release
       uses: actions/github-script@v7
