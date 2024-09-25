@@ -178,7 +178,7 @@ jobs:
     - name: Build rpm file
       run: |
         cd "${{ github.workspace }}/packaging/rpm"
-        ls -al
+        ls -alR
 
     - name: Build rpm file
       run: |
