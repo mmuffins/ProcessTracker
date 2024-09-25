@@ -1,0 +1,12 @@
+﻿[Unit]
+Description=Process Tracker Service
+
+[Service]
+Type=notify
+WorkingDirectory=/usr/share/processtracker
+ExecStart=/usr/bin/processtracker
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

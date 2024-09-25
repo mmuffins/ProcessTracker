@@ -7,6 +7,10 @@
     <UserSecretsId>dotnet-ProcessTrackerService-7091b743-9517-444c-829d-a27805e883b1</UserSecretsId>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <AssemblyName>processtracker</AssemblyName>
+  </PropertyGroup>
+  
   <ItemGroup>
     <Compile Remove="Database\**" />
     <Content Remove="Database\**" />
@@ -41,7 +45,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="ProcessTracker.service">
+    <None Update="processtracker.service">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
