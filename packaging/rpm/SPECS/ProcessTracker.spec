@@ -18,7 +18,7 @@ mkdir -p $RPM_BUILD_ROOT/%{_bindir}
 mkdir -p $RPM_BUILD_ROOT/%{_datadir}/doc/%{name_lower}
 mkdir -p $RPM_BUILD_ROOT/%{_datadir}/%{name_lower}
 mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/%{name_lower}
-mkdir -p $RPM_BUILD_ROOT/%{_unitdir}  # For the systemd service
+mkdir -p $RPM_BUILD_ROOT/%{_unitdir}
 
 install -m 755 %{_sourcedir}/%{name_lower} $RPM_BUILD_ROOT/%{_bindir}
 install -m 644 %{_sourcedir}/%{name_lower}.service $RPM_BUILD_ROOT/%{_unitdir}
