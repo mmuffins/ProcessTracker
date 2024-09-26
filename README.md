@@ -6,7 +6,7 @@ To manually install the application download the latest win-x64 zip file from th
 
 The application can either be executed interactively. Alternatively the following command line can be used to create a service from the application:
 ```powershell
-sc create "Process Tracker" binpath= "[Directory]\ProcessTrackerService.exe" start= auto
+sc create "Process Tracker Service" binpath= "[Directory]\ProcessTrackerService.exe" start= auto
 ```
 ### Linux
 #### Via rpm file
@@ -26,7 +26,7 @@ To completele remove the application, delete the previously created items:
 
 The following command can be used to delete the service:
 ```powershell
-sc delete "Process Tracker"
+sc delete "Process Tracker Service"
 ```
 
 ## Configuration
