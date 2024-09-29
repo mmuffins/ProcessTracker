@@ -141,10 +141,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Install build packages
-      run: |
-        sudo apt install -y elfutils
-
     - name: Create folder structure
       run: |
         cd "${{ github.workspace }}/packaging/rpm"
@@ -202,9 +198,8 @@ jobs:
       run: |
         cd "${{ github.workspace }}/publish"
         rpm -qip ${{ env.package_name }}-${{ env.version }}-${{ env.rpm_release }}.${{ env.rpm_arch }}.rpm
-        
-        cd "${{ github.workspace }}/packaging/rpm/SOURCES"
-        eu-readelf -n processtracker 
+        rpm2cpio ${{ env.package_name }}-${{ env.version }}-${{ env.rpm_release }}.${{ env.rpm_arch }}.rpm  | cpio -idmv
+        ls -alR
 
   release:
     if: ${{ github.event_name != 'pull_request'  && github.ref_name == 'main' }}
