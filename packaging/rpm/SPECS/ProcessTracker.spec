@@ -6,7 +6,7 @@ License: MIT
 BuildArch: %{buildarch}
 
 # BuildRequires: systemd-rpm-macros
-Requires: dotnet-runtime >= 8.0
+Requires: dotnet-runtime-8.0 >= 8.0.8
 
 %global name_lower processtracker
 %global __strip /bin/true
