@@ -202,6 +202,9 @@ jobs:
       run: |
         cd "${{ github.workspace }}/publish"
         rpm -qip ${{ env.package_name }}-${{ env.version }}-${{ env.rpm_release }}.${{ env.rpm_arch }}.rpm
+        
+        cd "${{ github.workspace }}/packaging/rpm/SOURCES"
+        eu-readelf -n processtracker 
 
   release:
     if: ${{ github.event_name != 'pull_request'  && github.ref_name == 'main' }}
