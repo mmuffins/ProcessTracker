@@ -9,7 +9,8 @@ BuildArch: %{buildarch}
 Requires: dotnet-runtime-8.0 >= 8.0.4
 
 %global name_lower processtracker
-# %global __strip /bin/true
+%global __strip /bin/true
+%define _build_id_links none
 # workaround for missing systemd rpm macros package on github agents
 %global _unitdir %{_prefix}/lib/systemd/system
 
