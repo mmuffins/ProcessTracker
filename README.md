@@ -54,6 +54,12 @@ The following options are supported in the configuration file:
   - `CushionDelay`: Time in seconds that has to elapse after a process cannot be found before it is considered to be terminated.  Defaults to 60.
   - `DatabasePath`: Path for the process tracker database defaults to `C:/ProgramData/ProcessTracker/processtracker.db` in windows and `/var/lib/processtracker/processtracker.db` in linux.
 
+## Upgrading
+### Via rpm file
+To upgrade the application via rpm file, download the latest version from the releases section and upgrade it using
+```bash
+rpm -Uvh ProcessTracker-<version>.rmp
+```
 
 # Database Migrations
 To apply migrations and create a new database run the following from the root folder of the solution.
