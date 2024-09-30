@@ -16,6 +16,13 @@ builder.Configuration
 
 var dbPath = builder.Configuration.GetSection("AppSettings:DatabasePath").Value ?? "";
 
+// Ensure the folder structure for the database exists
+var dbDirectory = Path.GetDirectoryName(dbPath);
+if (!string.IsNullOrEmpty(dbDirectory) && !Directory.Exists(dbDirectory))
+{
+    Directory.CreateDirectory(dbDirectory);
+}
+
 builder.Services.AddDbContext<PTServiceContext>(options =>
     options.UseSqlite($"Data Source={dbPath}", b => b.MigrationsAssembly("ProcessTrackerService.Infrastructure")),
     ServiceLifetime.Transient);
