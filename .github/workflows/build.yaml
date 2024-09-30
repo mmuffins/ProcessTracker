@@ -198,6 +198,8 @@ jobs:
       run: |
         cd "${{ github.workspace }}/publish"
         rpm -qip ${{ env.package_name }}-${{ env.version }}-${{ env.rpm_release }}.${{ env.rpm_arch }}.rpm
+        rpm2cpio ${{ env.package_name }}-${{ env.version }}-${{ env.rpm_release }}.${{ env.rpm_arch }}.rpm  | cpio -idmv
+        ls -alR
 
   release:
     if: ${{ github.event_name != 'pull_request'  && github.ref_name == 'main' }}
