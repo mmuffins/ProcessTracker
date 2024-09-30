@@ -3,7 +3,7 @@ Description=Process Tracker Service
 
 [Service]
 Type=notify
-WorkingDirectory=/opt/processtracker/processtracker
+WorkingDirectory=/opt/processtracker
 ExecStart=/opt/processtracker/processtracker
 Restart=on-failure
 RestartSec=5
