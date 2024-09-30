@@ -20,38 +20,45 @@ A tool to track and report how long process were running.
 %install
 rm -rf $RPM_BUILD_ROOT
 
-mkdir -p $RPM_BUILD_ROOT/%{_bindir}
+mkdir -p $RPM_BUILD_ROOT/opt/%{name_lower}
 mkdir -p $RPM_BUILD_ROOT/%{_datadir}/doc/%{name_lower}
-mkdir -p $RPM_BUILD_ROOT/%{_datadir}/%{name_lower}
 mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/%{name_lower}
 mkdir -p $RPM_BUILD_ROOT/%{_unitdir}
 
-install -m 755 %{_sourcedir}/%{name_lower} $RPM_BUILD_ROOT/%{_bindir}
+install -m 755 %{_sourcedir}/%{name_lower} $RPM_BUILD_ROOT/opt/%{name_lower}
+install -m 644 %{_sourcedir}/*.dll $RPM_BUILD_ROOT/opt/%{name_lower}/
 install -m 644 %{_sourcedir}/%{name_lower}.service $RPM_BUILD_ROOT/%{_unitdir}
 install -m 644 %{_sourcedir}/appsettings.json $RPM_BUILD_ROOT/%{_sysconfdir}/%{name_lower}
 install -m 644 %{_sourcedir}/README.md $RPM_BUILD_ROOT/%{_datadir}/doc/%{name_lower}
 install -m 644 %{_sourcedir}/LICENSE $RPM_BUILD_ROOT/%{_datadir}/doc/%{name_lower}
 
 %files
-%attr(0755, root, root) %{_bindir}/%{name_lower}
+%attr(0755, root, root) /opt/%{name_lower}/%{name_lower}
+%attr(0644, root, root) /opt/%{name_lower}/*.dll
 %attr(0644, root, root) %{_unitdir}/%{name_lower}.service
-%config(noreplace) %{_sysconfdir}/%{name_lower}/appsettings.json  
 %attr(0644, root, root) %{_datadir}/doc/%{name_lower}/README.md
 %attr(0644, root, root) %{_datadir}/doc/%{name_lower}/LICENSE
-%dir %{_datadir}/%{name_lower}
+%config(noreplace) %{_sysconfdir}/%{name_lower}/appsettings.json  
+%dir /opt/%{name_lower}
 %dir %{_datadir}/doc/%{name_lower}
 
 %post
 systemctl daemon-reload
-systemctl enable %{name_lower}.service
-systemctl start %{name_lower}.service
+if [ $1 -eq 1 ]; then  # Upgrade
+    systemctl start %{name_lower}.service
+else  # New installation
+    systemctl enable %{name_lower}.service
+    systemctl start %{name_lower}.service
+fi
 
 %preun
-if [ $1 -eq 0 ]; then  # Only on uninstallation, not upgrade
+if [ $1 -eq 0 ]; then  # Uninstall
     systemctl stop %{name_lower}.service
     systemctl disable %{name_lower}.service
     echo "The configuration file /etc/processtracker/appsettings.json has not been removed."
     echo "If you want to delete it, remove it manually with 'rm /etc/processtracker/appsettings.json'"
+elif [ $1 -eq 1 ]; then  # Upgrade
+    systemctl stop %{name_lower}.service
 fi
 
 %postun
