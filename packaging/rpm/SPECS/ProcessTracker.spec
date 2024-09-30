@@ -26,7 +26,7 @@ mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/%{name_lower}
 mkdir -p $RPM_BUILD_ROOT/%{_unitdir}
 
 install -m 755 %{_sourcedir}/%{name_lower} $RPM_BUILD_ROOT/opt/%{name_lower}
-install -m 644 %{_sourcedir}/*.dll $RPM_BUILD_ROOT/opt/%{name_lower}/
+install -m 644 %{_sourcedir}/*.so $RPM_BUILD_ROOT/opt/%{name_lower}/
 install -m 644 %{_sourcedir}/%{name_lower}.service $RPM_BUILD_ROOT/%{_unitdir}
 install -m 644 %{_sourcedir}/appsettings.json $RPM_BUILD_ROOT/%{_sysconfdir}/%{name_lower}
 install -m 644 %{_sourcedir}/README.md $RPM_BUILD_ROOT/%{_datadir}/doc/%{name_lower}
@@ -34,7 +34,7 @@ install -m 644 %{_sourcedir}/LICENSE $RPM_BUILD_ROOT/%{_datadir}/doc/%{name_lowe
 
 %files
 %attr(0755, root, root) /opt/%{name_lower}/%{name_lower}
-%attr(0644, root, root) /opt/%{name_lower}/*.dll
+%attr(0644, root, root) /opt/%{name_lower}/*.so
 %attr(0644, root, root) %{_unitdir}/%{name_lower}.service
 %attr(0644, root, root) %{_datadir}/doc/%{name_lower}/README.md
 %attr(0644, root, root) %{_datadir}/doc/%{name_lower}/LICENSE
