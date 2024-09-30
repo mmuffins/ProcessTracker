@@ -10,6 +10,7 @@ on:
 env:
   version: "1.0.${{ github.run_number }}${{ github.run_attempt }}"
   package_name: ProcessTracker
+  package_name_lowercase: processtracker
   rpm_arch: x86_64
   rpm_release: 1
 
@@ -126,7 +127,7 @@ jobs:
       run: |
         cd "${{ github.workspace }}/build/"
         find . -name "*.pdb" -type f -delete
-        tar -czvf ../publish/${{ env.package_name }}_${{ env.version }}_linux-x64.tar.gz *
+        tar -czvf ../publish/${{ env.package_name_lowercase }}_${{ env.version }}_linux-x64.tar.gz *
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
@@ -180,13 +181,13 @@ jobs:
         mkdir -p "${{ github.workspace }}/publish"
         cd "${{ github.workspace }}/packaging/rpm"
 
-        rpmbuild -bb ./SPECS/${{ env.package_name }}.spec \
+        rpmbuild -bb ./SPECS/${{ env.package_name_lowercase }}.spec \
           --define "_topdir $PWD" \
           --define "version ${{ env.version }}" \
           --define "release ${{ env.rpm_release }}" \
           --define "buildarch ${{ env.rpm_arch }}"
 
-        mv ./RPMS/${{ env.rpm_arch }}/${{ env.package_name }}-${{ env.version }}-${{ env.rpm_release }}.${{ env.rpm_arch }}.rpm "${{ github.workspace }}/publish/"
+        mv ./RPMS/${{ env.rpm_arch }}/${{ env.package_name_lowercase }}-${{ env.version }}-${{ env.rpm_release }}.${{ env.rpm_arch }}.rpm "${{ github.workspace }}/publish/"
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
@@ -197,8 +198,8 @@ jobs:
     - name: Check rpm file
       run: |
         cd "${{ github.workspace }}/publish"
-        rpm -qip ${{ env.package_name }}-${{ env.version }}-${{ env.rpm_release }}.${{ env.rpm_arch }}.rpm
-        rpm2cpio ${{ env.package_name }}-${{ env.version }}-${{ env.rpm_release }}.${{ env.rpm_arch }}.rpm  | cpio -idmv
+        rpm -qip ${{ env.package_name_lowercase }}-${{ env.version }}-${{ env.rpm_release }}.${{ env.rpm_arch }}.rpm
+        rpm2cpio ${{ env.package_name_lowercase }}-${{ env.version }}-${{ env.rpm_release }}.${{ env.rpm_arch }}.rpm  | cpio -idmv
         ls -alR
 
   release:
@@ -258,8 +259,8 @@ jobs:
 
           const files = [
             path.join('${{ github.workspace }}', 'publish', '${{ env.package_name }}_${{ env.version }}_win-x64.zip'),
-            path.join('${{ github.workspace }}', 'publish', '${{ env.package_name }}_${{ env.version }}_linux-x64.tar.gz'),
-            path.join('${{ github.workspace }}', 'publish', '${{ env.package_name }}-${{ env.version }}-${{ env.rpm_release }}.${{ env.rpm_arch }}.rpm'),
+            path.join('${{ github.workspace }}', 'publish', '${{ env.package_name_lowercase }}_${{ env.version }}_linux-x64.tar.gz'),
+            path.join('${{ github.workspace }}', 'publish', '${{ env.package_name_lowercase }}-${{ env.version }}-${{ env.rpm_release }}.${{ env.rpm_arch }}.rpm'),
           ];
 
           // Loop through the array and upload each file

@@ -3,8 +3,8 @@ Description=Process Tracker Service
 
 [Service]
 Type=notify
-WorkingDirectory=/usr/share/processtracker
-ExecStart=/usr/bin/processtracker
+WorkingDirectory=/opt/processtracker
+ExecStart=/opt/processtracker/processtracker
 Restart=on-failure
 RestartSec=5
 
