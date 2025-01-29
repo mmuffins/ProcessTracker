@@ -20,14 +20,10 @@ buildDotnetModule rec {
 
   src = ./.;
 
-  # projectFile = [
-  #   "ProcessTrackerService.Core/ProcessTrackerService.Core.csproj"
-  #   "ProcessTrackerService.Infrastructure/ProcessTrackerService.Infrastructure.csproj"
-  #   "ProcessTrackerService/ProcessTrackerService.csproj"
-  # ];
   projectFile = [
     "ProcessTrackerService.Core/ProcessTrackerService.Core.csproj"
     "ProcessTrackerService.Infrastructure/ProcessTrackerService.Infrastructure.csproj"
+    "ProcessTrackerService/ProcessTrackerService.csproj"
   ];
   nugetDeps = ./deps.json;
   executables = [ "processtracker" ];
