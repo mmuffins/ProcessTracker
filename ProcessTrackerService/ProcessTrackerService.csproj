@@ -1,11 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dotnet-ProcessTrackerService-7091b743-9517-444c-829d-a27805e883b1</UserSecretsId>
-    <RuntimeIdentifiers>linux-x64;win-x64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -20,13 +19,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
+    <PackageReference Include="ProcessTrackerService.Core" Version="*" Condition=" '$(ContinuousIntegrationBuild)'=='true'" />
+    <PackageReference Include="ProcessTrackerService.Infrastructure" Version="*" Condition=" '$(ContinuousIntegrationBuild)'=='true'" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="9.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="9.0.1" />
   </ItemGroup>
 
   <ItemGroup>

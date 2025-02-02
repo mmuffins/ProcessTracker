@@ -4,9 +4,11 @@
 , dotnetCorePackages
 }:
 
-# dotnet restore --packages out ./ProcessTracker.sln
-# nuget-to-json out > deps.json
+# dotnet restore --packages nuget ./ProcessTracker.sln
+# nuget-to-json nuget > deps.json
+# rm -r nuget
 # nix-build -E 'with import <nixpkgs> {}; callPackage ./default.nix {}'
+
 
 buildDotnetModule rec {
   pname = "process-tracker";
@@ -21,13 +23,21 @@ buildDotnetModule rec {
   src = ./.;
 
   projectFile = [
-    "ProcessTrackerService.Core/ProcessTrackerService.Core.csproj"
-    "ProcessTrackerService.Infrastructure/ProcessTrackerService.Infrastructure.csproj"
     "ProcessTrackerService/ProcessTrackerService.csproj"
   ];
+
   nugetDeps = ./deps.json;
   executables = [ "processtracker" ];
 
-  dotnet-sdk = dotnetCorePackages.sdk_8_0;
-  dotnet-runtime = dotnetCorePackages.runtime_8_0;
+  dotnet-sdk = dotnetCorePackages.sdk_9_0;
+  dotnet-runtime = dotnetCorePackages.runtime_9_0;
+  # buildPhase = ''
+  #   tmp="$(mktemp -d)"
+  #   dotnet publish ProcessTrackerService --configuration Relase --runtime linux-x64 --framework net8.0 --self-contained false -p:PublishSingleFile=true -p:PublishTrimmed=false -p:PublishReadyToRun=false --output publish
+  # '';
+
+  # installPhase = ''
+  #   mkdir -p $out
+  #   cp -r publish $out/bin
+  # '';
 }
