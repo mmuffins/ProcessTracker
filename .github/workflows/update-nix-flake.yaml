@@ -1,0 +1,41 @@
+name: update-nix-flake
+
+on:
+  workflow_dispatch:
+
+env:
+  dotnet_major: 9
+  build_framework: net9.0
+  build_configuration: Release
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        build_runtime: 
+          - linux-x64
+    
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      contents: write
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: cachix/install-nix-action@v30
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.dotnet_major }}
+      
+    - name: dotnet restore
+      run: dotnet restore --packages nuget-restore ./ProcessTracker.sln
+
+    - name: create dependency file
+      run: nuget-to-json nuget-restore > deps.json
+
+    - name: debug
+      run: cat deps.json
+      
