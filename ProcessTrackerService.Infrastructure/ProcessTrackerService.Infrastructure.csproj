@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ProcessTrackerService.Core" Version="*" Condition=" '$(ContinuousIntegrationBuild)'=='true'" />
     <PackageReference Include="EFCore.BulkExtensions" Version="8.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.1">
       <PrivateAssets>all</PrivateAssets>
