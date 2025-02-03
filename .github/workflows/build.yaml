@@ -5,6 +5,10 @@ on:
   push:
     branches: 
       - main
+    paths:
+      - '**'
+      - '!flake.lock'
+      - '!deps.json'
   pull_request:
 
 env:
