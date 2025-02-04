@@ -1,6 +1,4 @@
 [
-
-  
   {
     "pname": "Azure.Core",
     "version": "1.38.0",
@@ -60,6 +58,11 @@
     "pname": "MediatR.Contracts",
     "version": "2.0.1",
     "hash": "sha256-89ULOtn0fPqX0R7ulvnIjjz+rjKYq4//REhKNO3rUvw="
+  },
+  {
+    "pname": "Microsoft.AspNetCore.App.Runtime.linux-x64",
+    "version": "9.0.1",
+    "hash": "sha256-rfYRuKubMkl8pAiDGbpbYIV3iEoYRB9YWwauYnw7SOE="
   },
   {
     "pname": "Microsoft.Bcl.AsyncInterfaces",
@@ -435,6 +438,11 @@
     "pname": "Microsoft.IdentityModel.Tokens",
     "version": "6.35.0",
     "hash": "sha256-rdiQoREUyKGopmLtFcMrHamRi0D/3bwJ+u60Qj8rxis="
+  },
+  {
+    "pname": "Microsoft.NETCore.App.Runtime.linux-x64",
+    "version": "9.0.1",
+    "hash": "sha256-MXtq6w3V2a+h4knK7JQR/YJlwfvxmhlG4X1b2+me1qo="
   },
   {
     "pname": "Microsoft.NETCore.Platforms",
