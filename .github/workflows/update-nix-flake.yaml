@@ -1,10 +1,16 @@
 name: update-nix-flake
 
 on:
-  workflow_dispatch:
-  release:
-    types:
-      - published
+  workflow_dispatch:      
+  workflow_run:
+    workflows: ["build"]
+    types: [completed]
+    branches: [main]
+
+  # don't use on release, it only works for manually crated releases
+  # release:
+  #   types:
+  #     - published
 
 env:
   dotnet_major: 9
@@ -85,7 +91,3 @@ jobs:
       run: gh pr create -B main -H "flake-update-${{ github.run_number }}-${{ github.run_attempt }}" --title 'Update nix flake' --body 'Updated nix flake'
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: test build
-      run: |
-        nix build

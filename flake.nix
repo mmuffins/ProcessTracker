@@ -1,6 +1,5 @@
 {
   description = "process-tracker";
-
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
   outputs = { 
@@ -38,7 +37,7 @@
           ];
 
           # to manually update dependencies:
-          # dotnet restore --packages nuget-restore ./ProcessTracker.sln
+          # dotnet restore --use-current-runtime --packages nuget-restore ./ProcessTracker.sln
           # nuget-to-json nuget-restore > deps.json
           # rm -r nuget-restore
           nugetDeps = ./deps.json;
@@ -48,11 +47,46 @@
 
       defaultPackage."${system}" = self.packages."${system}".process-tracker;
 
-      # Optional: Define an app for easier invocation via “nix run”.
       # apps.process-tracker = {
       #   type = "app";
-      #   # Adjust the path to the built executable if necessary.
-      #   program = "${self.packages.\"x86_64-linux\".process-tracker}/bin/processtracker";
+      #   program = "${self.packages.${system}.process-tracker}/bin/processtracker";
       # };
-    };
+
+
+      nixosModules.process-tracker = { config, lib, pkgs, ... }:
+        let
+          cfg = config.services.process-tracker;
+        in {
+          options.services.process-tracker = {
+            enable = lib.mkEnableOption "Enable the process tracker service";
+            package = lib.mkOption {
+              type = lib.types.package;
+              default = self.packages.${system}.process-tracker;
+              description = "The package to run as the process tracker service.";
+            };
+            # Extra service options (if needed)
+            serviceConfig = lib.mkOption {
+              type = lib.types.attrs;
+              default = {};
+              description = "Extra configuration options for the process tracker systemd unit.";
+            };
+          };
+
+          # Install the package and create a systemd service
+          config = lib.mkIf cfg.enable {
+            # Also make it available to run interactively
+            environment.systemPackages = [ cfg.package ];
+
+            systemd.user.services.process-tracker = {
+              description = "Process Tracker Service";
+              after = [ "graphical-session.target" ];
+              wantedBy = [ "default.target" ];
+              serviceConfig = cfg.serviceConfig // {
+                ExecStart = "${cfg.package}/bin/processtracker";
+                Restart = "on-failure";
+              };
+            };
+          };
+        };
+  };
 }
