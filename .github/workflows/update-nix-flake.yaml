@@ -21,6 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: write
     
     steps:
     - uses: actions/checkout@v4
@@ -64,4 +65,9 @@ jobs:
     - name: commit changes
       run: |
         git commit -m "Update nix flake"
-        git push
+        git push --set-upstream origin flake-update-${{ github.run_number }}-${{ github.run_attempt }}
+
+    - name: create pull request
+      run: gh pr create -B main -H "flake-update-${{ github.run_number }}-${{ github.run_attempt }}" --title 'Update nix flake' --body 'Updated nix flake'
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
