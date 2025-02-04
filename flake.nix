@@ -47,12 +47,6 @@
 
       defaultPackage."${system}" = self.packages."${system}".process-tracker;
 
-      # apps.process-tracker = {
-      #   type = "app";
-      #   program = "${self.packages.${system}.process-tracker}/bin/processtracker";
-      # };
-
-
       nixosModules.process-tracker = { config, lib, pkgs, ... }:
         let
           cfg = config.services.process-tracker;
@@ -65,26 +59,30 @@
               description = "The package to run as the process tracker service.";
             };
             # Extra service options (if needed)
-            serviceConfig = lib.mkOption {
-              type = lib.types.attrs;
-              default = {};
-              description = "Extra configuration options for the process tracker systemd unit.";
-            };
+            # serviceConfig = lib.mkOption {
+            #   type = lib.types.attrs;
+            #   default = {};
+            #   description = "Extra configuration options for the process tracker systemd unit.";
+            # };
           };
 
           # Install the package and create a systemd service
           config = lib.mkIf cfg.enable {
             # Also make it available to run interactively
-            environment.systemPackages = [ cfg.package ];
+            home.packages = [ cfg.package ];
 
             systemd.user.services.process-tracker = {
-              description = "Process Tracker Service";
-              after = [ "graphical-session.target" ];
-              wantedBy = [ "default.target" ];
-              serviceConfig = cfg.serviceConfig // {
-                ExecStart = "${cfg.package}/bin/processtracker";
+              Unit = {
+                Description = "Process Tracker Service";
+                After = [ "graphical-session.target" ];
+              };
+
+              Service = {
+                ExecStart = "${lib.getExe' cfg.package "processtracker"}";
                 Restart = "on-failure";
               };
+
+              Install.WantedBy = [ "default.target" ];
             };
           };
         };
