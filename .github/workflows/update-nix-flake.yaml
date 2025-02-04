@@ -42,6 +42,22 @@ jobs:
       run: |
         nix shell nixpkgs#nuget-to-json nixpkgs#dotnetCorePackages.sdk_9_0 --command sh -c "nuget-to-json nuget-restore/ > deps.json"
         rm -r nuget-restore
+        cat deps.json
 
-    - name: debug
-      run: cat deps.json
+    - name: create branch
+      run: git checkout -b "flake-update-${{ github.run_number }}${{ github.run_attempt }}"
+      
+    - name: check git status
+      run: git status
+
+    - name: stage changes
+      run: |
+        git add deps.json
+        git add flake.nix
+        git add flake.lock
+        git status
+
+    - name: commit changes
+      run: |
+        git commit -m "Update nix flake"
+        git push
