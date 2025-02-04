@@ -38,6 +38,10 @@ jobs:
     - name: dotnet restore
       run: dotnet restore --runtime ${{ matrix.build_runtime }} --packages nuget-restore ./ProcessTracker.sln
 
+    - name: update nix flake
+      run: |
+        nix flake update --commit-lock-file
+
     - name: create dependency file
       run: |
         nix shell nixpkgs#nuget-to-json nixpkgs#dotnetCorePackages.sdk_9_0 --command sh -c "nuget-to-json nuget-restore/ > deps.json"
@@ -46,8 +50,8 @@ jobs:
 
     - name: configure git
       run: |
-        git config user.email flake-update@dummy.com
-        git config user.name flake-update
+        git config user.email 'github-actions[bot]@users.noreply.github.com'
+        git config user.name 'github-actions[bot]'
 
     - name: create branch
       run: git checkout -b "flake-update-${{ github.run_number }}-${{ github.run_attempt }}"
@@ -71,3 +75,7 @@ jobs:
       run: gh pr create -B main -H "flake-update-${{ github.run_number }}-${{ github.run_attempt }}" --title 'Update nix flake' --body 'Updated nix flake'
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: test build
+      run: |
+        nix build
