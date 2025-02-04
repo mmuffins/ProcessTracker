@@ -78,7 +78,7 @@
               };
 
               Service = {
-                ExecStart = "${lib.getExe' cfg.package "process-tracker"}";
+                ExecStart = "${lib.getExe' cfg.package "processtracker"}";
                 Restart = "on-failure";
               };
 
