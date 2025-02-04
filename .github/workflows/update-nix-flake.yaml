@@ -39,8 +39,9 @@ jobs:
       run: dotnet restore --packages nuget-restore ./ProcessTracker.sln
 
     - name: create dependency file
-      run: nix shell nixpkgs#nuget-to-json nixpkgs#dotnetCorePackages.runtime_9_0 --command 'nuget-to-json ./nuget-restore > ./deps.json'
+      run: |
+        nix shell nixpkgs#nuget-to-json nixpkgs#dotnetCorePackages.sdk_9_0 --command sh -c "nuget-to-json nuget-restore/ > deps.json"
+        rm -r nuget-restore
 
     - name: debug
       run: cat deps.json
-      
