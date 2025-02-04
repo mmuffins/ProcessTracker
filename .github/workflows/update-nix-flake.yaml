@@ -45,7 +45,7 @@ jobs:
         tag="${GITHUB_REF#refs/tags/}"
         echo "Updating appVersion in flake.nix to '${tag}'"
         # Replace the line that defines appVersion
-        sed -i "s/appVersion = \"[^\"]*\"/appVersion = \"${tag}\"/" flake.nix
+        sed -i "s|appVersion = \"[^\"]*\"|appVersion = \"${tag}\"|" flake.nix
         # Verify the change
         grep "appVersion =" flake.nix
 
