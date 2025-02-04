@@ -38,6 +38,17 @@ jobs:
     - name: dotnet restore
       run: dotnet restore --runtime ${{ matrix.build_runtime }} --packages nuget-restore ./ProcessTracker.sln
 
+    - name: update flake app version
+      shell: bash
+      run: |
+        # Extract the tag name from the GitHub ref (e.g. "refs/tags/1.0.461")
+        tag="${GITHUB_REF#refs/tags/}"
+        echo "Updating appVersion in flake.nix to '${tag}'"
+        # Replace the line that defines appVersion
+        sed -i "s/appVersion = \"[^\"]*\"/appVersion = \"${tag}\"/" flake.nix
+        # Verify the change
+        grep "appVersion =" flake.nix
+
     - name: update nix flake
       run: |
         nix flake update --commit-lock-file
