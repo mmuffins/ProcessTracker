@@ -2,9 +2,9 @@ name: update-nix-flake
 
 on:
   workflow_dispatch:
-  # release:
-  #   types:
-  #     - created
+  release:
+    types:
+      - created
 
 env:
   dotnet_major: 9
@@ -36,7 +36,7 @@ jobs:
         dotnet-version: ${{ env.dotnet_major }}
       
     - name: dotnet restore
-      run: dotnet restore --packages nuget-restore ./ProcessTracker.sln
+      run: dotnet restore --runtime ${{ matrix.build_runtime }} --packages nuget-restore ./ProcessTracker.sln
 
     - name: create dependency file
       run: |
