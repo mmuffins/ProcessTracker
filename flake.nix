@@ -47,12 +47,6 @@
 
       defaultPackage."${system}" = self.packages."${system}".process-tracker;
 
-      # apps.process-tracker = {
-      #   type = "app";
-      #   program = "${self.packages.${system}.process-tracker}/bin/processtracker";
-      # };
-
-
       nixosModules.process-tracker = { config, lib, pkgs, ... }:
         let
           cfg = config.services.process-tracker;
@@ -75,14 +69,14 @@
           # Install the package and create a systemd service
           config = lib.mkIf cfg.enable {
             # Also make it available to run interactively
-            environment.systemPackages = [ cfg.package ];
+            home.packages = [ cfg.package ];
 
             systemd.user.services.process-tracker = {
               description = "Process Tracker Service";
               after = [ "graphical-session.target" ];
               wantedBy = [ "default.target" ];
               serviceConfig = cfg.serviceConfig // {
-                ExecStart = "${cfg.package}/bin/processtracker";
+                ExecStart = "${lib.getExe' cfg.package "process-tracker"}";
                 Restart = "on-failure";
               };
             };

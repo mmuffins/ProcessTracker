@@ -14,7 +14,50 @@ To install the application via rpm file, download the latest version from the re
 ```bash
 rpm -ivh ProcessTracker-<version>.x86_64.rmp
 ```
+#### NixOs flake
+If you manage your NixOS system using flakes, you can install the application via the provided flake:
+- Add the flake to your system configuration:
+```
+{
+  description = "My NixOS Configuration";
 
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    process-tracker = {
+      url = "github:mmuffins/ProcessTracker";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
+  outputs = { self, nixpkgs, process-tracker, ... }:
+    let
+      system = "x86_64-linux";
+      pkgs = import nixpkgs { inherit system; };
+    in {
+      nixosConfigurations.my-hostname = pkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          # Import the process tracker NixOS module from the flake.
+          process-tracker.nixosModules.process-tracker
+
+          # ... other modules
+        ];
+        configuration = { config, pkgs, ... }: {
+          # Enable the process tracker service.
+          services.process-tracker.enable = true;
+
+          # Optionally, override additional options:
+          # services.process-tracker.serviceConfig.Restart = "on-failure";
+        };
+      };
+    };
+}
+- Rebuild your system
+```
+sudo nixos-rebuild switch --flake /path/to/your/flake#my-hostname
+```
+
+```
 
 ## Deletion
 ### Windows
@@ -43,6 +86,7 @@ The application is configured using a `appsettings.json` file. The application t
 - The path configured in the `PROCESSTRACKER_APPSETTINGS_PATH` environment variable, if it is set and points to a valid file.
 - `C:\ProgramData\ProcessTracker\appsettings.json` as the default if the environment variable is not set or does not point to a valid file.
 
+
 ### Supported Properties
 The following options are supported in the configuration file:
 - `Logging` - Optional. Supports standard .net core logging settings, see https://learn.microsoft.com/en-us/aspnet/core/fundamentals/logging
@@ -59,6 +103,16 @@ The following options are supported in the configuration file:
 To upgrade the application via rpm file, download the latest version from the releases section and upgrade it using
 ```bash
 rpm -Uvh ProcessTracker-<version>.rmp
+```
+
+### NixOS
+To updating the flake:
+``` bash
+nix flake update
+```
+Then rebuild your system:
+```bash
+sudo nixos-rebuild switch --flake /path/to/your/flake#my-hostname
 ```
 
 # Database Migrations
