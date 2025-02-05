@@ -16,9 +16,44 @@
         "type": "github"
       }
     },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1738680400,
+        "narHash": "sha256-ooLh+XW8jfa+91F1nhf9OF7qhuA/y1ChLx6lXDNeY5U=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "799ba5bffed04ced7067a91798353d360788b30d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "process-tracker-cli": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_2"
+      },
+      "locked": {
+        "lastModified": 1738797712,
+        "narHash": "sha256-eGnJQJ3CclUZoXVSkrS7zsEV65iST23YSjRFenuOc0o=",
+        "owner": "mmuffins",
+        "repo": "ProcessTrackerCLI",
+        "rev": "e227ff4b42564338edfd074256133dceebde54e4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mmuffins",
+        "repo": "ProcessTrackerCLI",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "process-tracker-cli": "process-tracker-cli"
       }
     }
   },
