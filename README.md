@@ -46,17 +46,18 @@ If you manage your NixOS system using flakes, you can install the application vi
           # Enable the process tracker service.
           services.process-tracker.enable = true;
 
-          # Optionally, override additional options:
-          # services.process-tracker.serviceConfig.Restart = "on-failure";
         };
       };
     };
 }
+```
 - Rebuild your system
 ```
 sudo nixos-rebuild switch --flake /path/to/your/flake#my-hostname
 ```
-
+The application will automatically create a systemd service.
+```
+systemctl --user status process-tracker
 ```
 
 ## Deletion
