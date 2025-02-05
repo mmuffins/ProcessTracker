@@ -37,11 +37,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1738797712,
-        "narHash": "sha256-eGnJQJ3CclUZoXVSkrS7zsEV65iST23YSjRFenuOc0o=",
+        "lastModified": 1738798486,
+        "narHash": "sha256-Da/PUVNx6HHSKZyTNRm1RWb//ElozqzGqh8ywOWE0iU=",
         "owner": "mmuffins",
         "repo": "ProcessTrackerCLI",
-        "rev": "e227ff4b42564338edfd074256133dceebde54e4",
+        "rev": "f6f70fbd90a166b6abded5ab69fc886d7fa5ce40",
         "type": "github"
       },
       "original": {
