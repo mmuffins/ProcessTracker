@@ -102,12 +102,13 @@ jobs:
         git status
 
     - name: commit changes
-      run: |
-        git commit -m "Update nix flake"
-        git push --set-upstream origin flake-update-${{ github.run_number }}-${{ github.run_attempt }}
-
+      run: git commit -m "Update nix flake"
+        
     - name: build project
       run: nix build
+
+    - name: push branch
+      run: git push --set-upstream origin flake-update-${{ github.run_number }}-${{ github.run_attempt }}
 
     - name: create pull request
       run: gh pr create -B main -H "flake-update-${{ github.run_number }}-${{ github.run_attempt }}" --title 'Update nix flake' --body 'Updated nix flake'
