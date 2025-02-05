@@ -50,7 +50,7 @@
           nugetDeps = ./deps.json;
           executables = [ "processtracker" ];
         };
-          process-tracker-cli = process-tracker-cli.packages.${system}.process-tracker;
+          process-tracker-cli = inputs.process-tracker-cli.packages.${system}.process-tracker-cli;
       };
 
       defaultPackage."${system}" = self.packages."${system}".process-tracker;
@@ -58,7 +58,6 @@
       nixosModules.process-tracker = { config, lib, pkgs, ... }:
         let
           cfg = config.services.process-tracker;
-          cli = self.packages.${system}.process-tracker-cli;
         in {
           options.services.process-tracker = {
             enable = lib.mkEnableOption "Enable the process tracker service";
@@ -79,7 +78,7 @@
           config = lib.mkIf cfg.enable {
             home.packages = [ 
               cfg.package
-              cli.package
+              self.packages.${system}.process-tracker-cli
             ];
 
             systemd.user.services.process-tracker = {
@@ -97,7 +96,7 @@
             };
           };
         };
-        
+
         process-tracker-cli = process-tracker-cli.nixosModules.process-tracker-cli;
   };
 }

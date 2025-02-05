@@ -58,6 +58,25 @@ jobs:
     - name: dotnet restore
       run: dotnet restore --runtime ${{ matrix.build_runtime }} --packages nuget-restore ./ProcessTracker.sln
 
+    - name: remove duplicate dependencies
+      run: | 
+        # workaround to fix `ln: failed to create symbolic link '/build/nuget.09LAmy/fallback/microsoft.netcore.app.runtime.linux-x64/9.0.1': File exists`
+        # when building the project in nixos
+
+        DIRS=(
+            "nuget-restore/microsoft.aspnetcore.app.runtime.linux-x64"
+            "nuget-restore/microsoft.netcore.app.runtime.linux-x64"
+        )
+
+        for dir in "${DIRS[@]}"; do
+            if [ -d "$dir" ]; then
+                echo "Removing $dir..."
+                rm -rf "$dir"
+            else
+                echo "$dir does not exist, skipping..."
+            fi
+        done
+
     - name: update flake app version
       run: |
         latest_tag=$(git tag | sort --version-sort | tail -n1)
@@ -86,6 +105,9 @@ jobs:
       run: |
         git commit -m "Update nix flake"
         git push --set-upstream origin flake-update-${{ github.run_number }}-${{ github.run_attempt }}
+
+    - name: build project
+      run: nix build
 
     - name: create pull request
       run: gh pr create -B main -H "flake-update-${{ github.run_number }}-${{ github.run_attempt }}" --title 'Update nix flake' --body 'Updated nix flake'
