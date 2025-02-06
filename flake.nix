@@ -3,7 +3,10 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    process-tracker-cli.url = "github:mmuffins/ProcessTrackerCLI";
+    process-tracker-cli = {
+      url = "github:mmuffins/ProcessTrackerCLI";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
