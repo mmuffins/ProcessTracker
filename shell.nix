@@ -1,4 +1,6 @@
-{ pkgs ? import <nixpkgs> {} }:
+{
+  pkgs ? import <nixpkgs> { },
+}:
 let
   buildInputs = with pkgs; [
     dotnetCorePackages.sdk_9_0
@@ -7,14 +9,14 @@ let
     # stdenv.cc
   ];
 in
-  pkgs.mkShell {
+pkgs.mkShell {
   inherit buildInputs;
-    name = "dotnet-env";
+  name = "dotnet-env";
 
-    DOTNET_ROOT = "${pkgs.dotnetCorePackages.sdk_9_0}";
+  DOTNET_ROOT = "${pkgs.dotnetCorePackages.sdk_9_0}";
 
-    shellHook = ''
-      export LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath buildInputs}
-      exec zsh
-    '';
+  shellHook = ''
+    export LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath buildInputs}
+    exec zsh
+  '';
 }
