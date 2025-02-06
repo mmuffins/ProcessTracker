@@ -6,17 +6,20 @@
     process-tracker-cli.url = "github:mmuffins/ProcessTrackerCLI";
   };
 
-  outputs = { 
-    self,
-    nixpkgs,
-    process-tracker-cli,
-    ...  
-  } @ inputs: let
+  outputs =
+    {
+      self,
+      nixpkgs,
+      process-tracker-cli,
+      ...
+    }@inputs:
+    let
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
       appVersion = "1.0.761";
       dotnetVersion = "9_0";
-    in {
+    in
+    {
       inherit system;
 
       packages."${system}" = rec {
@@ -50,15 +53,22 @@
           nugetDeps = ./deps.json;
           executables = [ "processtracker" ];
         };
-          process-tracker-cli = inputs.process-tracker-cli.packages.${system}.process-tracker-cli;
+        process-tracker-cli = inputs.process-tracker-cli.packages.${system}.process-tracker-cli;
       };
 
       defaultPackage."${system}" = self.packages."${system}".process-tracker;
 
-      nixosModules.process-tracker = { config, lib, pkgs, ... }:
+      nixosModules.process-tracker =
+        {
+          config,
+          lib,
+          pkgs,
+          ...
+        }:
         let
           cfg = config.services.process-tracker;
-        in {
+        in
+        {
           options.services.process-tracker = {
             enable = lib.mkEnableOption "Enable the process tracker service";
             package = lib.mkOption {
@@ -76,7 +86,7 @@
 
           # Install the packages and create a systemd service
           config = lib.mkIf cfg.enable {
-            home.packages = [ 
+            home.packages = [
               cfg.package
               self.packages.${system}.process-tracker-cli
             ];
@@ -97,6 +107,6 @@
           };
         };
 
-        process-tracker-cli = process-tracker-cli.nixosModules.process-tracker-cli;
-  };
+      process-tracker-cli = process-tracker-cli.nixosModules.process-tracker-cli;
+    };
 }
