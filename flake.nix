@@ -22,8 +22,8 @@
     {
       inherit system;
 
-      packages."${system}" = rec {
-        process-tracker = pkgs.buildDotnetModule rec {
+      packages."${system}" = {
+        process-tracker = pkgs.buildDotnetModule {
           pname = "process-tracker";
           version = "${appVersion}";
 
@@ -70,12 +70,21 @@
         in
         {
           options.services.process-tracker = {
+
             enable = lib.mkEnableOption "Enable the process tracker service";
+
             package = lib.mkOption {
               type = lib.types.package;
               default = self.packages.${system}.process-tracker;
               description = "The package to run as the process tracker service.";
             };
+
+            notifyOnFailure = lib.mkOption {
+              type = lib.types.bool;
+              default = true;
+              description = "Enable notifications when the service fails. Requires libnotify to be installed.";
+            };
+
             # Extra service options (if needed)
             # serviceConfig = lib.mkOption {
             #   type = lib.types.attrs;
@@ -95,6 +104,7 @@
               Unit = {
                 Description = "Process Tracker Service";
                 After = [ "graphical-session.target" ];
+                OnFailure = lib.mkIf cfg.notifyOnFailure [ "process-tracker-notify.service" ];
               };
 
               Service = {
@@ -103,6 +113,18 @@
               };
 
               Install.WantedBy = [ "default.target" ];
+            };
+
+            systemd.user.services.process-tracker-notify = lib.mkIf cfg.notifyOnFailure {
+              Unit = {
+                Description = "Notify user if Process Tracker service fails";
+                After = [ "graphical-session.target" ];
+              };
+
+              Service = {
+                Type = "oneshot";
+                ExecStart = "${pkgs.bash}/bin/bash -c '${pkgs.libnotify}/bin/notify-send --urgency critical --app-name process-tracker --icon dialog-error \"Process Tracker service failed. See systemctl --user status process-tracker\"'";
+              };
             };
           };
         };
