@@ -13,6 +13,6 @@ updates:
       all-dependencies:
         patterns:
         - "Microsoft*"
-        - "MeadiatR*"
+        - "MediatR*"
         - "EFCore*"
         - "Autofac*"
