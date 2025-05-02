@@ -19,7 +19,7 @@
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
-      appVersion = "1.0.911";
+      appVersion = "1.0.931";
       dotnetVersion = "9_0";
     in
     {
