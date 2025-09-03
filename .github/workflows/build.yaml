@@ -37,7 +37,7 @@ jobs:
       build_framework: net9.0
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v4
@@ -145,7 +145,7 @@ jobs:
     needs: build
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Create folder structure
       run: |
@@ -215,7 +215,7 @@ jobs:
       contents: write
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Get win
       uses: actions/download-artifact@v5
