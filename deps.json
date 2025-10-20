@@ -10,6 +10,11 @@
     "hash": "sha256-J3nI80CQwS7fwRLnqBxqZNemxqP05rcn3x44YpIf2no="
   },
   {
+    "pname": "coverlet.collector",
+    "version": "6.0.2",
+    "hash": "sha256-LdSQUrOmjFug47LjtqgtN2MM6BcfG0HR5iL+prVHlDo="
+  },
+  {
     "pname": "EFCore.BulkExtensions",
     "version": "9.0.1",
     "hash": "sha256-17bus6gPJ+wnXWAjXA5o+W12FgMr2p2vy6xyTbc1+wo="
@@ -120,6 +125,11 @@
     "hash": "sha256-hxpMKC6OF8OaIiSZhAgJ+Rw7M8nqS6xHdUURnRRxJmU="
   },
   {
+    "pname": "Microsoft.CodeCoverage",
+    "version": "17.11.1",
+    "hash": "sha256-1dLlK3NGh88PuFYZiYpT+izA96etxhU3BSgixDgdtGA="
+  },
+  {
     "pname": "Microsoft.Data.SqlClient",
     "version": "5.1.6",
     "hash": "sha256-WKiGbnxb/B1g9yPOpYFRsIqCLn5eOzVY0+L15bhOGHY="
@@ -133,6 +143,11 @@
     "pname": "Microsoft.Data.SqlClient.SNI.runtime",
     "version": "6.0.2",
     "hash": "sha256-CQuJfjZYoRxfc07cSzUNCOOdzmUJu0p10J+WpcG2BJ0="
+  },
+  {
+    "pname": "Microsoft.Data.Sqlite",
+    "version": "9.0.9",
+    "hash": "sha256-YH266y6MTw+ObY6C1T2+d3/QycONrynBbjqkqc1uuug="
   },
   {
     "pname": "Microsoft.Data.Sqlite.Core",
@@ -490,6 +505,11 @@
     "hash": "sha256-beVbbVQy874HlXkTKarPTT5/r7XR1NGHA/50ywWp7YA="
   },
   {
+    "pname": "Microsoft.NET.Test.Sdk",
+    "version": "17.11.1",
+    "hash": "sha256-0JUEucQ2lzaPgkrjm/NFLBTbqU1dfhvhN3Tl3moE6mI="
+  },
+  {
     "pname": "Microsoft.SqlServer.Server",
     "version": "1.0.0",
     "hash": "sha256-mx/iqHmBMwA8Ulot0n6YFVIKsU1Tx7q4Tru7MSjbEgQ="
@@ -498,6 +518,16 @@
     "pname": "Microsoft.SqlServer.Types",
     "version": "160.1000.6",
     "hash": "sha256-XU5s3iwz8JIwIrG5Xe8wZJ8cuCUx7q3fOLYzNHmA9jg="
+  },
+  {
+    "pname": "Microsoft.TestPlatform.ObjectModel",
+    "version": "17.11.1",
+    "hash": "sha256-5vX+vCzFY3S7xfMVIv8OlMMFtdedW9UIJzc0WEc+vm4="
+  },
+  {
+    "pname": "Microsoft.TestPlatform.TestHost",
+    "version": "17.11.1",
+    "hash": "sha256-wSkY0H1fQAq0H3LcKT4u7Y5RzhAAPa6yueVN84g8HxU="
   },
   {
     "pname": "Mono.TextTemplating",
@@ -523,6 +553,11 @@
     "pname": "NetTopologySuite.IO.SqlServerBytes",
     "version": "2.1.0",
     "hash": "sha256-ribA66VZQ9arg5lC59TeSaAQxD0JBRq15acgyFcDrco="
+  },
+  {
+    "pname": "Newtonsoft.Json",
+    "version": "13.0.1",
+    "hash": "sha256-K2tSVW4n4beRPzPu3rlVaBEMdGvWSv/3Q1fxaDh4Mjo="
   },
   {
     "pname": "Npgsql",
@@ -686,6 +721,11 @@
   },
   {
     "pname": "System.Reflection.Metadata",
+    "version": "1.6.0",
+    "hash": "sha256-JJfgaPav7UfEh4yRAQdGhLZF1brr0tUWPl6qmfNWq/E="
+  },
+  {
+    "pname": "System.Reflection.Metadata",
     "version": "7.0.0",
     "hash": "sha256-GwAKQhkhPBYTqmRdG9c9taqrKSKDwyUgOEhWLKxWNPI="
   },
@@ -763,5 +803,45 @@
     "pname": "System.Threading.Tasks.Extensions",
     "version": "4.5.4",
     "hash": "sha256-owSpY8wHlsUXn5xrfYAiu847L6fAKethlvYx97Ri1ng="
+  },
+  {
+    "pname": "xunit",
+    "version": "2.9.2",
+    "hash": "sha256-h5+yTTfCmokCPy4lqdEw8RGzQlrlsQAW3Am0Jh0q7oo="
+  },
+  {
+    "pname": "xunit.abstractions",
+    "version": "2.0.3",
+    "hash": "sha256-0D1y/C34iARI96gb3bAOG8tcGPMjx+fMabTPpydGlAM="
+  },
+  {
+    "pname": "xunit.analyzers",
+    "version": "1.16.0",
+    "hash": "sha256-P5Bvl9hvHvF8KY1YWLg4tKiYxlfRnmHyL14jfSACDaU="
+  },
+  {
+    "pname": "xunit.assert",
+    "version": "2.9.2",
+    "hash": "sha256-EE6r526Q4cHn0Ourf1ENpXZ37Lj/P2uNvonHgpdcnq4="
+  },
+  {
+    "pname": "xunit.core",
+    "version": "2.9.2",
+    "hash": "sha256-zhjV1I5xh0RFckgTEK72tIkLxVl4CPmter2UB++oye8="
+  },
+  {
+    "pname": "xunit.extensibility.core",
+    "version": "2.9.2",
+    "hash": "sha256-MQAC/4d67Nssu3R+pHPh6vHitBXQYxEEZkVVMGW720c="
+  },
+  {
+    "pname": "xunit.extensibility.execution",
+    "version": "2.9.2",
+    "hash": "sha256-f+9UfoPyK3JIDhQSW0Yu9c4PGqUqZC96DMINCYi2i80="
+  },
+  {
+    "pname": "xunit.runner.visualstudio",
+    "version": "2.8.1",
+    "hash": "sha256-ZcFsH0sPMhaoVRYfsST+SBER4F8CH1zpqVF9TJb7E5g="
   }
 ]
