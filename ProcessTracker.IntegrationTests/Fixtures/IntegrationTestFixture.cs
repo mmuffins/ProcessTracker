@@ -1,3 +1,4 @@
+using System;
 using MediatR;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +21,7 @@ public sealed class IntegrationTestFixture : IAsyncLifetime
     private IHost? _host;
     private SqliteConnection? _connection;
 
-    private static readonly IReadOnlyDictionary<string, string> DefaultConfiguration = new Dictionary<string, string>
+    private static readonly IReadOnlyDictionary<string, string?> DefaultConfiguration = new Dictionary<string, string?>
     {
         ["Logging:LogLevel:Default"] = "Information",
         ["Logging:LogLevel:Microsoft.Hosting.Lifetime"] = "Information",
@@ -59,9 +60,9 @@ public sealed class IntegrationTestFixture : IAsyncLifetime
 
     public IConfiguration Configuration { get; }
 
-    public IReadOnlyDictionary<string, string> ConfigurationDefaults => DefaultConfiguration;
+    public IReadOnlyDictionary<string, string?> ConfigurationDefaults => DefaultConfiguration;
 
-    public void ApplyConfigurationOverrides(IDictionary<string, string> overrides)
+    public void ApplyConfigurationOverrides(IDictionary<string, string?> overrides)
     {
         ArgumentNullException.ThrowIfNull(overrides);
 
@@ -99,7 +100,15 @@ public sealed class IntegrationTestFixture : IAsyncLifetime
     {
         if (_host is not null)
         {
-            await _host.DisposeAsync();
+            if (_host is IAsyncDisposable asyncDisposable)
+            {
+                await asyncDisposable.DisposeAsync();
+            }
+            else
+            {
+                _host.Dispose();
+            }
+
             _host = null;
         }
 
@@ -117,6 +126,23 @@ public sealed class IntegrationTestFixture : IAsyncLifetime
             var context = provider.GetRequiredService<PTServiceContext>();
             await context.Database.EnsureDeletedAsync();
             await context.Database.EnsureCreatedAsync();
+        });
+    }
+
+    public async Task SeedDatabaseAsync(Func<PTServiceContext, Task>? seeder = null)
+    {
+        await ResetDatabaseAsync();
+
+        if (seeder is null)
+        {
+            return;
+        }
+
+        await ExecuteScopeAsync(async provider =>
+        {
+            var context = provider.GetRequiredService<PTServiceContext>();
+            await seeder(context);
+            await context.SaveChangesAsync();
         });
     }
 
