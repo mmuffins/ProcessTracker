@@ -12,9 +12,12 @@ using System.Net;
 namespace ProcessTrackerService.Core.Handlers
 {
     public sealed class SessionAddHandler : IRequestHandler<SessionAddRequest, GenericResponse>
-	{
-		private readonly IAsyncRepository<TagSession> _tagSessionRepository;
-		private readonly IAsyncRepository<Tag> _tagRepository;
+    {
+        private const string InvalidFormatMessage = "Invalid {0} format. Format must be {1}";
+        private const string MissingFormatMessage = "Date/time format configuration is missing.";
+
+        private readonly IAsyncRepository<TagSession> _tagSessionRepository;
+        private readonly IAsyncRepository<Tag> _tagRepository;
         private readonly IConfiguration _configuration;
 
         public SessionAddHandler(IAsyncRepository<TagSession> tagSessionRepository, IAsyncRepository<Tag> tagRepository, IConfiguration configuration)
@@ -24,32 +27,65 @@ namespace ProcessTrackerService.Core.Handlers
             _configuration = configuration;
         }
 
-        private AppSettings AppSettings
-        {
-            get
-            {
-                return _configuration.GetSection("AppSettings").Get<AppSettings>();
-            }
-        }
+        private AppSettings AppSettings => _configuration.GetSection("AppSettings").Get<AppSettings>();
 
         public async Task<GenericResponse> Handle(SessionAddRequest request, CancellationToken cancellationToken)
-		{
-            DateTime startDate;
-            DateTime endDate;
+        {
+            if (string.IsNullOrWhiteSpace(request.TagName))
+            {
+                return new GenericResponse((int)HttpStatusCode.BadRequest, false, "Tag name is required.");
+            }
 
-            // convert startdate and enddate from string to DateTime datatype
-            var isValidDate = DateTime.TryParseExact(request.StartDate, AppSettings.DateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out startDate);
-            if (!isValidDate)
-                return new GenericResponse((int)HttpStatusCode.ExpectationFailed, false, "Invalid start date format. Format must be " + AppSettings.DateTimeFormat);
+            var tagName = request.TagName.Trim();
+            if (tagName.Length == 0)
+            {
+                return new GenericResponse((int)HttpStatusCode.BadRequest, false, "Tag name is required.");
+            }
 
-            isValidDate = DateTime.TryParseExact(request.EndDate, AppSettings.DateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out endDate);
-            if (!isValidDate)
-                return new GenericResponse((int)HttpStatusCode.ExpectationFailed, false, "Invalid end date format. Format must be " + AppSettings.DateTimeFormat);
+            if (string.IsNullOrWhiteSpace(request.StartDate) || string.IsNullOrWhiteSpace(request.EndDate))
+            {
+                return new GenericResponse((int)HttpStatusCode.BadRequest, false, "Start and end dates are required.");
+            }
 
-            // get tag from the database and return error if no tag found
-            var tag = await _tagRepository.FirstOrDefaultAsync(new GenericSpecification<Tag>(x => x.Name.ToLower().Equals(request.TagName.ToLower())));
+            var dateTimeFormat = AppSettings?.DateTimeFormat;
+            if (string.IsNullOrWhiteSpace(dateTimeFormat))
+            {
+                return new GenericResponse((int)HttpStatusCode.InternalServerError, false, MissingFormatMessage);
+            }
+
+            if (!DateTime.TryParseExact(request.StartDate, dateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var startDate))
+            {
+                return new GenericResponse((int)HttpStatusCode.ExpectationFailed, false, string.Format(CultureInfo.InvariantCulture, InvalidFormatMessage, "start date", dateTimeFormat));
+            }
+
+            if (!DateTime.TryParseExact(request.EndDate, dateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var endDate))
+            {
+                return new GenericResponse((int)HttpStatusCode.ExpectationFailed, false, string.Format(CultureInfo.InvariantCulture, InvalidFormatMessage, "end date", dateTimeFormat));
+            }
+
+            if (startDate >= endDate)
+            {
+                return new GenericResponse((int)HttpStatusCode.BadRequest, false, "Start date must be earlier than end date.");
+            }
+
+            var lowerCaseName = tagName.ToLowerInvariant();
+            var tag = await _tagRepository.FirstOrDefaultAsync(
+                new GenericSpecification<Tag>(x => x.Name != null && x.Name.ToLower() == lowerCaseName));
             if (tag == null)
+            {
                 return new GenericResponse((int)HttpStatusCode.NotFound, false, "No tag found.");
+            }
+
+            var overlaps = await _tagSessionRepository.AnyAsync(
+                new GenericSpecification<TagSession>(
+                    x => x.TagId == tag.Id
+                        && x.StartTime < endDate
+                        && (x.EndTime ?? x.LastUpdateTime) > startDate));
+
+            if (overlaps)
+            {
+                return new GenericResponse((int)HttpStatusCode.Conflict, false, "Session overlaps with an existing entry.");
+            }
 
             await _tagSessionRepository.AddAsync(new TagSession
             {
@@ -60,7 +96,6 @@ namespace ProcessTrackerService.Core.Handlers
             });
 
             return new GenericResponse((int)HttpStatusCode.OK, true, "Session added successfully.");
-		}
-	}
-
+        }
+    }
 }
