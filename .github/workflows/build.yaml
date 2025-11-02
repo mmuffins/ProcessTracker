@@ -54,7 +54,7 @@ jobs:
       run: dotnet publish ProcessTrackerService --configuration ${{ env.build_configuration }} --runtime ${{ matrix.build_runtime }} --framework ${{ env.build_framework }} --self-contained false -p:PublishSingleFile=true -p:PublishTrimmed=false -p:PublishReadyToRun=false -p:Version=${{ env.version }} -p:PackageVersion=${{ env.version }} --output publish
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: build-${{ matrix.build_runtime }}
         path: ${{ github.workspace }}/publish
@@ -63,7 +63,7 @@ jobs:
       run: dotnet test --configuration ${{ env.build_configuration }} --framework ${{ env.build_framework }} --verbosity normal --logger "trx;LogFileName=TestResults.trx"
         
     - name: Publish Unit Test Results
-      uses: dorny/test-reporter@v1
+      uses: dorny/test-reporter@v2
       with:
         name: Unit Test Results
         path: ProcessTracker.IntegrationTests/**/TestResults.trx
@@ -81,7 +81,7 @@ jobs:
         mkdir -p publish
 
     - name: Get artifacts
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         name: build-win-x64
         path: ${{ github.workspace }}/build
@@ -94,7 +94,7 @@ jobs:
         zip -r ../publish/${{ env.package_name }}_${{ env.version }}_win-x64.zip ./*
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: win
         path: ${{ github.workspace }}/publish/
@@ -111,7 +111,7 @@ jobs:
         mkdir -p publish
 
     - name: Get artifacts
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         name: build-linux-x64
         path: ${{ github.workspace }}/build
@@ -135,7 +135,7 @@ jobs:
         tar -czvf ../publish/${{ env.package_name_lowercase }}_${{ env.version }}_linux-x64.tar.gz *
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: tarball
         path: ${{ github.workspace }}/publish/
@@ -157,7 +157,7 @@ jobs:
         mkdir -p SRPMS
 
     - name: Get artifacts
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         name: build-linux-x64
         path: ${{ github.workspace }}/packaging/rpm/SOURCES
@@ -195,7 +195,7 @@ jobs:
         mv ./RPMS/${{ env.rpm_arch }}/${{ env.package_name_lowercase }}-${{ env.version }}-${{ env.rpm_release }}.${{ env.rpm_arch }}.rpm "${{ github.workspace }}/publish/"
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: rpm
         path: ${{ github.workspace }}/publish
@@ -218,19 +218,19 @@ jobs:
     - uses: actions/checkout@v5
 
     - name: Get win
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         name: win
         path: ${{ github.workspace }}/publish
 
     - name: Get tarball
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         name: tarball
         path: ${{ github.workspace }}/publish
         
     - name: Get rpm
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         name: rpm
         path: ${{ github.workspace }}/publish
