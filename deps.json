@@ -841,7 +841,7 @@
   },
   {
     "pname": "xunit.runner.visualstudio",
-    "version": "2.8.1",
-    "hash": "sha256-ZcFsH0sPMhaoVRYfsST+SBER4F8CH1zpqVF9TJb7E5g="
+    "version": "3.1.5",
+    "hash": "sha256-O5657884QGldszsEWQFCDRTXViFBmZ4GGC+4iU+usSQ="
   }
 ]
