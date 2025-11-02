@@ -13,6 +13,10 @@ updates:
       all-dependencies:
         patterns:
         - "Microsoft*"
+        - "Microsoft.NET*"
         - "MediatR*"
         - "EFCore*"
         - "Autofac*"
+        - "xunit"
+        - "xunit*"
+        - "coverlet.collector"
