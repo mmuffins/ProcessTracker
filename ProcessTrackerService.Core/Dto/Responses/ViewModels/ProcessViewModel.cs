@@ -1,10 +1,11 @@
-﻿namespace ProcessTrackerService.Core.Dto.Responses.ViewModels
+namespace ProcessTrackerService.Core.Dto.Responses.ViewModels;
+
+#nullable enable
+
+public class ProcessViewModel
 {
-    internal class ProcessViewModel
-    {
-        public string Name { get; set; }
-        public string MainWindowTitle { get; set; }
-        public string Description { get; set; }
-        public string Path { get; set; }
-    }
+    public string? Name { get; set; }
+    public string? MainWindowTitle { get; set; }
+    public string? Description { get; set; }
+    public string? Path { get; set; }
 }
