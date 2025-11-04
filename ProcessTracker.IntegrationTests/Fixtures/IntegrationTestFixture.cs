@@ -56,6 +56,11 @@ public sealed class IntegrationTestFixture : IAsyncLifetime
         _builder.Services.AddHostedService<Worker>();
 
         InfrastructureModule.RegisterServices(_builder.Services);
+
+        _builder.Services.AddSingleton<SwitchableProcessProvider>();
+        _builder.Services.AddSingleton<IProcessProvider>(provider => provider.GetRequiredService<SwitchableProcessProvider>());
+        _builder.Services.AddSingleton<MutableDateTimeProvider>();
+        _builder.Services.AddSingleton<IDateTimeProvider>(provider => provider.GetRequiredService<MutableDateTimeProvider>());
     }
 
     public IConfiguration Configuration { get; }
@@ -127,6 +132,8 @@ public sealed class IntegrationTestFixture : IAsyncLifetime
             await context.Database.EnsureDeletedAsync();
             await context.Database.EnsureCreatedAsync();
         });
+
+        ResetTestDoubles();
     }
 
     public async Task SeedDatabaseAsync(Func<PTServiceContext, Task>? seeder = null)
@@ -193,5 +200,14 @@ public sealed class IntegrationTestFixture : IAsyncLifetime
             var context = provider.GetRequiredService<PTServiceContext>();
             await context.Database.EnsureCreatedAsync();
         });
+    }
+
+    private void ResetTestDoubles()
+    {
+        var processProvider = Services.GetRequiredService<SwitchableProcessProvider>();
+        processProvider.UseSystemProcesses();
+
+        var clock = Services.GetRequiredService<MutableDateTimeProvider>();
+        clock.Reset();
     }
 }

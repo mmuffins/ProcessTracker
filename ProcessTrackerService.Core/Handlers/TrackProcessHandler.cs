@@ -8,7 +8,7 @@ using ProcessTrackerService.Core.Helpers;
 using ProcessTrackerService.Core.Interfaces;
 using ProcessTrackerService.Core.Interfaces.Repository;
 using ProcessTrackerService.Core.Specifications;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Net;
 
 namespace ProcessTrackerService.Core.Handlers
@@ -19,13 +19,23 @@ namespace ProcessTrackerService.Core.Handlers
         private readonly IAsyncRepository<Filter> _filterRepository;
         private readonly IAsyncRepository<Setting> _settingRepository;
         private readonly IConfiguration _configuration;
+        private readonly IProcessProvider _processProvider;
+        private readonly IDateTimeProvider _clock;
 
-        public TrackProcessHandler(ITagSessionRepository tagSessionRepository, IAsyncRepository<Filter> filterRepository, IAsyncRepository<Setting> settingRepository, IConfiguration configuration)
+        public TrackProcessHandler(
+            ITagSessionRepository tagSessionRepository,
+            IAsyncRepository<Filter> filterRepository,
+            IAsyncRepository<Setting> settingRepository,
+            IConfiguration configuration,
+            IProcessProvider processProvider,
+            IDateTimeProvider clock)
         {
             _tagSessionRepository = tagSessionRepository;
             _filterRepository = filterRepository;
             _settingRepository = settingRepository;
             _configuration = configuration;
+            _processProvider = processProvider;
+            _clock = clock;
         }
 
         private AppSettings AppSettings
@@ -60,27 +70,7 @@ namespace ProcessTrackerService.Core.Handlers
                 }
 
                 // Get Processes with their respective properties
-                var processes = Process.GetProcesses();
-                List<ProcessViewModel> pvmList = new List<ProcessViewModel>();
-                foreach (var process in processes)
-                {
-                    try
-                    {
-                        var mainModule = process.MainModule;
-                        ProcessViewModel pvm = new ProcessViewModel
-                        {
-                            Name = process.ProcessName,
-                            MainWindowTitle = process.MainWindowTitle,
-                            Description = mainModule?.FileVersionInfo.FileDescription ?? "",
-                            Path = mainModule?.FileName ?? ""
-                        };
-                        pvmList.Add(pvm);
-                    }
-                    catch (Exception)
-                    {
-                        continue;
-                    }
-                }
+                var pvmList = _processProvider.GetProcesses();
                 List<TagSession> tagSessionsUpdate = new List<TagSession>();
                 List<TagSession> tagSessionsAdd = new List<TagSession>();
 
@@ -101,12 +91,15 @@ namespace ProcessTrackerService.Core.Handlers
 
                     // if process is found and it does not have a incomplete session then start a new session otherwise leave it
                     if (found && tag.SessionId == null)
+                    {
+                        var currentTime = _clock.Now;
                         tagSessionsAdd.Add(new TagSession
                         {
                             TagId = tag.TagId,
-                            StartTime = DateTime.Now,
-                            LastUpdateTime = DateTime.Now
+                            StartTime = currentTime,
+                            LastUpdateTime = currentTime
                         });
+                    }
                     // if there is an incomplete session
                     else if (tag.SessionId > 0)
                     {
@@ -114,7 +107,8 @@ namespace ProcessTrackerService.Core.Handlers
                         if (session != null)
                         {
                             // if the elapsed time is more than cushion time then assume that the service creashed or stopped. Update the last time as endtime for this session
-                            if ((DateTime.Now - session.LastUpdateTime).TotalSeconds > AppSettings.CushionDelay)
+                            var currentTime = _clock.Now;
+                            if ((currentTime - session.LastUpdateTime).TotalSeconds > AppSettings.CushionDelay)
                             {
                                 session.EndTime = session.LastUpdateTime;
                                 tagSessionsUpdate.Add(session);
@@ -124,8 +118,8 @@ namespace ProcessTrackerService.Core.Handlers
                                     tagSessionsAdd.Add(new TagSession
                                     {
                                         TagId = tag.TagId,
-                                        StartTime = DateTime.Now,
-                                        LastUpdateTime = DateTime.Now
+                                        StartTime = currentTime,
+                                        LastUpdateTime = currentTime
                                     });
                             }
                             else
@@ -133,14 +127,14 @@ namespace ProcessTrackerService.Core.Handlers
                                 // update the last time on every iteration if the process is running
                                 if (found)
                                 {
-                                    session.LastUpdateTime = DateTime.Now;
+                                    session.LastUpdateTime = currentTime;
                                     tagSessionsUpdate.Add(session);
                                 }
                                 // if process is not running then close the session.
                                 else
                                 {
-                                    session.LastUpdateTime = DateTime.Now;
-                                    session.EndTime = DateTime.Now;
+                                    session.LastUpdateTime = currentTime;
+                                    session.EndTime = currentTime;
                                     tagSessionsUpdate.Add(session);
                                 }
                             }
@@ -159,7 +153,7 @@ namespace ProcessTrackerService.Core.Handlers
         }
 
         #region private
-        private bool FindProcessByFilter(string fieldType, string filterType, string value, List<ProcessViewModel> processes)
+        private bool FindProcessByFilter(string fieldType, string filterType, string value, IEnumerable<ProcessViewModel> processes)
         {
             // conditions to check filters by field type and return true if process is found 
 
