@@ -20,7 +20,7 @@
       "command": "dotnet",
       "args": [
         "publish",
-        "${workspaceFolder}/ParserConsole/ParserConsole.csproj",
+        "ProcessTrackerService",
         "--configuration",
         "${config:dotnet.defaults.buildConfiguration}",
         "--runtime",
@@ -45,7 +45,7 @@
       "command": "dotnet",
       "args": [
         "test",
-        "AnidbExportParser.sln",
+        "ProcessTracker.sln",
         "--configuration",
         "${config:dotnet.defaults.buildConfiguration}",
         "--framework",
