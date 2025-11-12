@@ -13,8 +13,8 @@ on:
   #     - published
 
 env:
-  dotnet_major: 9
-  build_framework: net9.0
+  dotnet_major: 10
+  build_framework: net10.0
   build_configuration: Release
 
 jobs:
@@ -60,7 +60,7 @@ jobs:
 
     - name: remove duplicate dependencies
       run: | 
-        # workaround to fix `ln: failed to create symbolic link '/build/nuget.09LAmy/fallback/microsoft.netcore.app.runtime.linux-x64/9.0.1': File exists`
+        # workaround to fix `ln: failed to create symbolic link '/build/nuget.09LAmy/fallback/microsoft.netcore.app.runtime.linux-x64/10.0.0': File exists`
         # when building the project in nixos
 
         DIRS=(
@@ -90,7 +90,7 @@ jobs:
 
     - name: create dependency file
       run: |
-        nix shell nixpkgs#nuget-to-json nixpkgs#dotnetCorePackages.sdk_9_0 --command sh -c "nuget-to-json nuget-restore/ > deps.json"
+        nix shell nixpkgs#nuget-to-json nixpkgs#dotnetCorePackages.sdk_10_0 --command sh -c "nuget-to-json nuget-restore/ > deps.json"
         rm -r nuget-restore
         cat deps.json
 
