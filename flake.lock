@@ -23,11 +23,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1767301383,
-        "narHash": "sha256-4coy0tedLuOLeC/XDtbf2tOWtP5lYro2XDJlKfED2YA=",
+        "lastModified": 1767303431,
+        "narHash": "sha256-PaBi2hUB/RTA8NfvGvgeyIhMO1g/j6W4bX0FsL4mLJ0=",
         "owner": "mmuffins",
         "repo": "ProcessTrackerCLI",
-        "rev": "23754c259defb7416adb8b78038b448ccd956d07",
+        "rev": "fb99948521470ed1fca19324908793b820f3457a",
         "type": "github"
       },
       "original": {
