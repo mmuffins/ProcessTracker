@@ -1,5 +1,4 @@
-﻿using Azure;
-using MediatR;
+﻿using MediatR;
 using ProcessTrackerService.Core.Dto.Requests;
 using ProcessTrackerService.Core.Dto.Responses;
 using ProcessTrackerService.Core.Helpers;
@@ -225,7 +224,8 @@ namespace ProcessTrackerService.Server
             ctx.Response.StatusCode = (int)HttpStatusCode.OK;
             ctx.Response.StatusDescription = ((HttpStatusCode)ctx.Response.StatusCode).ToString();
 
-            var options = new JsonSerializerOptions { 
+            var options = new JsonSerializerOptions
+            {
                 WriteIndented = true,
                 DefaultIgnoreCondition = JsonIgnoreCondition.Never,
                 IncludeFields = true,
