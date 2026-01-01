@@ -14,7 +14,7 @@ The `IntegrationTestFixture` exposes helpers for common integration testing patt
 
 ## Requirements
 
-- [.NET SDK 9.0](https://dotnet.microsoft.com/) or newer must be available on your PATH.
+- [.NET SDK 10.0](https://dotnet.microsoft.com/) or newer must be available on your PATH.
 - The solution restores NuGet packages from the default feeds; ensure you have network connectivity for the first restore.
 
 ## Running the tests
