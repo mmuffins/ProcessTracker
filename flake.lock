@@ -2,11 +2,11 @@
   "nodes": {
     "nixpkgs": {
       "locked": {
-        "lastModified": 1767892417,
-        "narHash": "sha256-dhhvQY67aboBk8b0/u0XB6vwHdgbROZT3fJAjyNh5Ww=",
+        "lastModified": 1769789167,
+        "narHash": "sha256-kKB3bqYJU5nzYeIROI82Ef9VtTbu4uA3YydSk/Bioa8=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "3497aa5c9457a9d88d71fa93a4a8368816fbeeba",
+        "rev": "62c8382960464ceb98ea593cb8321a2cf8f9e3e5",
         "type": "github"
       },
       "original": {
@@ -23,11 +23,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1767303431,
-        "narHash": "sha256-PaBi2hUB/RTA8NfvGvgeyIhMO1g/j6W4bX0FsL4mLJ0=",
+        "lastModified": 1769976135,
+        "narHash": "sha256-RaP80A6wmSafkA474x86oFjXhl6n7fndQ+OGSeMCHLU=",
         "owner": "mmuffins",
         "repo": "ProcessTrackerCLI",
-        "rev": "fb99948521470ed1fca19324908793b820f3457a",
+        "rev": "6adf754b5e739849e13faff14480730c9cb1ca4f",
         "type": "github"
       },
       "original": {
