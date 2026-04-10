@@ -2,11 +2,11 @@
   "nodes": {
     "nixpkgs": {
       "locked": {
-        "lastModified": 1775036866,
-        "narHash": "sha256-ZojAnPuCdy657PbTq5V0Y+AHKhZAIwSIT2cb8UgAz/U=",
+        "lastModified": 1775710090,
+        "narHash": "sha256-ar3rofg+awPB8QXDaFJhJ2jJhu+KqN/PRCXeyuXR76E=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "6201e203d09599479a3b3450ed24fa81537ebc4e",
+        "rev": "4c1018dae018162ec878d42fec712642d214fdfa",
         "type": "github"
       },
       "original": {
@@ -23,11 +23,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1775161340,
-        "narHash": "sha256-BLdshIq51pFGYHTTgbHlJg8OmggvH8Z4B21pQQwGyAw=",
+        "lastModified": 1775161868,
+        "narHash": "sha256-l1JxyflZ7IS72SD2Wpah6UIwoK3aVU0HhHvFCrevQlw=",
         "owner": "mmuffins",
         "repo": "ProcessTrackerCLI",
-        "rev": "d6546ddff80b20236549805bb81752009f866ade",
+        "rev": "cc89ddcb53a019a2a0b80b41aa218a0f4207cb93",
         "type": "github"
       },
       "original": {
@@ -42,7 +42,6 @@
         "process-tracker-cli": "process-tracker-cli"
       }
     }
-
   },
   "root": "root",
   "version": 7
