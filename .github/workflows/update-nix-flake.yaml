@@ -86,7 +86,7 @@ jobs:
 
     - name: update nix flake
       run: |
-        nix flake update --commit-lock-file
+        nix flake update
 
     - name: create dependency file
       run: |
