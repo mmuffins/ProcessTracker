@@ -42,6 +42,7 @@
         "process-tracker-cli": "process-tracker-cli"
       }
     }
+
   },
   "root": "root",
   "version": 7
