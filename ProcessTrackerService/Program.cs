@@ -12,7 +12,7 @@ var builder = Host.CreateApplicationBuilder(args);
 var configFilePath = GetConfigFilePath();
 
 builder.Configuration
-    .AddJsonFile(configFilePath, optional: false, reloadOnChange: true);
+    .AddJsonFile(configFilePath, optional: false, reloadOnChange: false);
 
 var dbPath = builder.Configuration.GetSection("AppSettings:DatabasePath").Value ?? "";
 
