@@ -7,7 +7,20 @@ using ProcessTrackerService.Infrastructure.Repository;
 using ProcessTrackerService.Server;
 using System.Runtime.InteropServices;
 
-var builder = Host.CreateApplicationBuilder(args);
+const string ReloadConfigOnChangeKey = "hostBuilder:reloadConfigOnChange";
+
+var builderConfiguration = new ConfigurationManager();
+builderConfiguration.AddInMemoryCollection(new Dictionary<string, string?>
+{
+    [ReloadConfigOnChangeKey] = "false",
+});
+
+var builder = Host.CreateApplicationBuilder(new HostApplicationBuilderSettings
+{
+    Args = args,
+    ContentRootPath = AppContext.BaseDirectory,
+    Configuration = builderConfiguration,
+});
 
 var configFilePath = GetConfigFilePath();
 
