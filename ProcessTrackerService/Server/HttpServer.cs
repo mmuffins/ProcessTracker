@@ -71,7 +71,7 @@ namespace ProcessTrackerService.Server
 
                 try
                 {
-                    _logger.LogInformation(req.Url.ToString() + "   at: {time}", DateTimeOffset.Now);
+                    _logger.LogDebug(req.Url.ToString() + "   at: {time}", DateTimeOffset.Now);
 
                     string requestBody = "";
                     using (var reader = new StreamReader(ctx.Request.InputStream, ctx.Request.ContentEncoding))
