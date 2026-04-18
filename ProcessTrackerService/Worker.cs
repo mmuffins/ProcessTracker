@@ -40,7 +40,7 @@ namespace ProcessTrackerService
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    _logger.LogInformation("Checking processes at: {time}", DateTimeOffset.Now);
+                    _logger.LogDebug("Checking processes at: {time}", DateTimeOffset.Now);
 
                     using (var scope = _serviceProvider.CreateScope())
                     {
