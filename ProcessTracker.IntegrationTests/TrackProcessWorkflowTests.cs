@@ -206,6 +206,14 @@ public sealed class TrackProcessWorkflowTests
             "Notes",
             "notes"
         };
+
+        yield return new object[]
+        {
+            FieldTypeEnum.CommandLine,
+            FilterTypeEnum.Contain,
+            "C:\\Program Files (x86)\\Wine Game\\Versions\\Base96826\\WineGame_2.exe -sso=1 -Displaymode 1 -launch -uid s2",
+            "WineGame_2.exe"
+        };
     }
 
     [Theory]
@@ -372,6 +380,9 @@ public sealed class TrackProcessWorkflowTests
                 break;
             case FieldTypeEnum.MainWindowTitle:
                 process.MainWindowTitle = value;
+                break;
+            case FieldTypeEnum.CommandLine:
+                process.CommandLine = value;
                 break;
             default:
                 process.Name = value;

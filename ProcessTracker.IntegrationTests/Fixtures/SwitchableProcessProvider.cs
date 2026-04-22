@@ -66,7 +66,8 @@ public sealed class SwitchableProcessProvider : IProcessProvider
             Name = process.Name,
             Description = process.Description,
             MainWindowTitle = process.MainWindowTitle,
-            Path = process.Path
+            Path = process.Path,
+            CommandLine = process.CommandLine
         };
     }
 }
