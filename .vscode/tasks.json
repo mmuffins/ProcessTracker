@@ -15,6 +15,24 @@
       "problemMatcher": "$msCompile"
     },
     {
+      "label": "build",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "${workspaceFolder}/ProcessTracker.sln",
+        "--configuration",
+        "Debug",
+        "--framework",
+        "net10.0"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
       "label": "dotnet publish",
       "type": "shell",
       "command": "dotnet",
