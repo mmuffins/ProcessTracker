@@ -77,8 +77,11 @@ public sealed class ProcessProvider : IProcessProvider
     {
         switch (process.ProcessName)
         {
+            case "steam.exe":
             case "python3":
             case "python":
+            case "pv-adverb":
+            case "reaper":
             case "umu.exe":
             case "Play Main Threa":
             case "wineserver":
