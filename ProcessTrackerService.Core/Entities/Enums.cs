@@ -16,7 +16,8 @@
     {
         Name = 1,
         Path = 2,
-        Description = 3,
-        MainWindowTitle = 4
+        CommandLine = 3,
+        Description = 4,
+        MainWindowTitle = 5,
     }
 }

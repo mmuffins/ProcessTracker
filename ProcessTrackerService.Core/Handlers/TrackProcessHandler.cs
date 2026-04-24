@@ -249,6 +249,29 @@ namespace ProcessTrackerService.Core.Handlers
                         return true;
                 }
             }
+            else if (FieldTypeEnum.CommandLine.ToString().Equals(fieldType))
+            {
+                if (FilterTypeEnum.Equal.ToString().Equals(filterType))
+                {
+                    if (processes.Any(x => !string.IsNullOrEmpty(x.CommandLine) && x.CommandLine.Equals(value, StringComparison.OrdinalIgnoreCase)))
+                        return true;
+                }
+                else if (FilterTypeEnum.Contain.ToString().Equals(filterType))
+                {
+                    if (processes.Any(x => !string.IsNullOrEmpty(x.CommandLine) && x.CommandLine.Contains(value, StringComparison.OrdinalIgnoreCase)))
+                        return true;
+                }
+                else if (FilterTypeEnum.EndWith.ToString().Equals(filterType))
+                {
+                    if (processes.Any(x => !string.IsNullOrEmpty(x.CommandLine) && x.CommandLine.EndsWith(value, StringComparison.OrdinalIgnoreCase)))
+                        return true;
+                }
+                else if (FilterTypeEnum.StartWith.ToString().Equals(filterType))
+                {
+                    if (processes.Any(x => !string.IsNullOrEmpty(x.CommandLine) && x.CommandLine.StartsWith(value, StringComparison.OrdinalIgnoreCase)))
+                        return true;
+                }
+            }
             return false;
         }
         #endregion
