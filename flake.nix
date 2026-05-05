@@ -38,7 +38,10 @@
           response=$(${pkgs.curl}/bin/curl -s -X POST -H "Content-Type: application/json" -d "$json_body" "http://localhost:${toString port}/api/Summarize")
           success=$(echo "$response" | ${pkgs.jq}/bin/jq -r '.Success')
           statuscode=$(echo "$response" | ${pkgs.jq}/bin/jq -r '.StatusCode')
-          echo "result: $success ($statuscode)"
+          if [ "$success" != "true" ]; then
+            echo "process-tracker-update failed: success=$success status=$statuscode" >&2
+            exit 1
+          fi
         '';
     in
     {
