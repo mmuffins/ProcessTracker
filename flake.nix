@@ -70,6 +70,30 @@
         }:
         let
           cfg = config.services.process-tracker;
+
+          generatedSettingsFile = pkgs.writeText "process-tracker.json" (
+            builtins.toJSON {
+              Logging = {
+                LogLevel = {
+                  Default = cfg.logging.logLevel;
+                  Microsoft.EntityFrameworkCore.Database.Command = cfg.logging.database;
+                  Microsoft.Hosting.Lifetime = cfg.logging.logLevel;
+                };
+              };
+
+              AppSettings = {
+                HttpPort = cfg.port;
+                DateTimeFormat = cfg.dateTimeFormat;
+                DateFormat = cfg.dateFormat;
+                ProcessCheckDelay = cfg.processCheckDelay;
+                CushionDelay = cfg.cushionDelay;
+                DatabasePath = cfg.databasePath;
+              };
+            }
+          );
+
+          effectiveSettingsFile =
+            if cfg.settingsFile != null then cfg.settingsFile else generatedSettingsFile;
         in
         {
           options.services.process-tracker = {
@@ -86,6 +110,67 @@
               type = lib.types.bool;
               default = true;
               description = "Enable notifications when the service fails. Requires libnotify to be installed.";
+            };
+
+            settingsFile = lib.mkOption {
+              type = lib.types.nullOr lib.types.str;
+              default = null;
+              description = ''
+                Full path to the main appsettings JSON file.
+
+                If null, the module generates a non-secret appsettings.json automatically
+                from the other module options.
+              '';
+            };
+
+            logging = {
+              logLevel = lib.mkOption {
+                type = lib.types.str;
+                default = "Information";
+                description = "Default logging level written into the generated appsettings.json.";
+              };
+
+              database = lib.mkOption {
+                type = lib.types.str;
+                default = "Warning";
+                description = "Database logging level written into the generated appsettings.json.";
+              };
+            };
+
+            port = lib.mkOption {
+              type = lib.types.int;
+              default = 8001;
+              description = "HTTP port for the process tracker API.";
+            };
+
+            dateTimeFormat = lib.mkOption {
+              type = lib.types.str;
+              default = "yyyy-MM-dd HH:mm";
+              description = "Date and time format used in the API responses.";
+            };
+
+            dateFormat = lib.mkOption {
+              type = lib.types.str;
+              default = "yyyy-MM-dd";
+              description = "Date format used in the API responses.";
+            };
+
+            processCheckDelay = lib.mkOption {
+              type = lib.types.int;
+              default = 20;
+              description = "Delay in seconds between process checks.";
+            };
+
+            cushionDelay = lib.mkOption {
+              type = lib.types.int;
+              default = 60;
+              description = "Additional delay in seconds added to process check delay to account for timing issues.";
+            };
+
+            databasePath = lib.mkOption {
+              type = lib.types.str;
+              default = "${config.xdg.dataHome}/processtracker/processtracker.db";
+              description = "File path for the process tracker SQLite database.";
             };
 
             # Extra service options (if needed)
@@ -113,6 +198,9 @@
               Service = {
                 ExecStart = "${lib.getExe' cfg.package "processtracker"}";
                 Restart = "on-failure";
+                Environment = [
+                  "PROCESSTRACKER_APPSETTINGS_PATH=${effectiveSettingsFile}"
+                ];
               };
 
               Install.WantedBy = [ "default.target" ];

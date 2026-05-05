@@ -11,7 +11,8 @@
             "cwd": "${workspaceFolder}",
             "env": {
                 "DOTNET_ENVIRONMENT": "Development",
-                "ASPNETCORE_ENVIRONMENT": "Development"
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "PROCESSTRACKER_APPSETTINGS_PATH": "${workspaceFolder}/ProcessTrackerService/appsettings.Development.json",
             },
             "stopAtEntry": false,
             "logging": {
