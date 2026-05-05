@@ -112,8 +112,15 @@
               description = "Enable notifications when the service fails. Requires libnotify to be installed.";
             };
 
+            settingsFilePath = lib.mkOption {
+              type = lib.types.path;
+              readOnly = true;
+              default = effectiveSettingsFile;
+              description = "Path to the process-tracker appsettings JSON file in the Nix store.";
+            };
+
             settingsFile = lib.mkOption {
-              type = lib.types.nullOr lib.types.str;
+              type = lib.types.nullOr lib.types.path;
               default = null;
               description = ''
                 Full path to the main appsettings JSON file.
@@ -173,12 +180,6 @@
               description = "File path for the process tracker SQLite database.";
             };
 
-            # Extra service options (if needed)
-            # serviceConfig = lib.mkOption {
-            #   type = lib.types.attrs;
-            #   default = {};
-            #   description = "Extra configuration options for the process tracker systemd unit.";
-            # };
           };
 
           # Install the packages and create a systemd service
