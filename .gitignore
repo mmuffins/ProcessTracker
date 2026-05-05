@@ -361,8 +361,12 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-ProcessTrackerService/Database/processtracker.db*
+Database/processtracker.db*
+Database/processtracker-dev.db*
 
 # nix specific
-result
 nuget-restore
+.direnv
+/result
+output/
+.codex

@@ -21,6 +21,28 @@
       pkgs = import nixpkgs { inherit system; };
       appVersion = "1.0.1931";
       dotnetVersion = "10_0";
+      makeProcessTrackerUpdateScript =
+        port:
+        pkgs.writeShellScriptBin "process-tracker-update" ''
+          set -eu
+
+          if [ "$#" -ne 2 ]; then
+            echo "usage: process-tracker-update <start-date> <end-date>" >&2
+            exit 1
+          fi
+
+          start_date="$1"
+          end_date="$2"
+
+          json_body=$(printf '{"StartDate": "%s", "EndDate": "%s"}' "$start_date" "$end_date")
+          response=$(${pkgs.curl}/bin/curl -s -X POST -H "Content-Type: application/json" -d "$json_body" "http://localhost:${toString port}/api/Summarize")
+          success=$(echo "$response" | ${pkgs.jq}/bin/jq -r '.Success')
+          statuscode=$(echo "$response" | ${pkgs.jq}/bin/jq -r '.StatusCode')
+          if [ "$success" != "true" ]; then
+            echo "process-tracker-update failed: success=$success status=$statuscode" >&2
+            exit 1
+          fi
+        '';
     in
     {
       inherit system;
@@ -57,6 +79,7 @@
           executables = [ "processtracker" ];
         };
         process-tracker-cli = inputs.process-tracker-cli.packages.${system}.process-tracker-cli;
+        process-tracker-update = makeProcessTrackerUpdateScript 8001;
       };
 
       defaultPackage."${system}" = self.packages."${system}".process-tracker;
@@ -70,6 +93,31 @@
         }:
         let
           cfg = config.services.process-tracker;
+          processTrackerUpdateScript = makeProcessTrackerUpdateScript cfg.port;
+
+          generatedSettingsFile = pkgs.writeText "process-tracker.json" (
+            builtins.toJSON {
+              Logging = {
+                LogLevel = {
+                  Default = cfg.logging.logLevel;
+                  Microsoft.EntityFrameworkCore.Database.Command = cfg.logging.database;
+                  Microsoft.Hosting.Lifetime = cfg.logging.logLevel;
+                };
+              };
+
+              AppSettings = {
+                HttpPort = cfg.port;
+                DateTimeFormat = cfg.dateTimeFormat;
+                DateFormat = cfg.dateFormat;
+                ProcessCheckDelay = cfg.processCheckDelay;
+                CushionDelay = cfg.cushionDelay;
+                DatabasePath = cfg.databasePath;
+              };
+            }
+          );
+
+          effectiveSettingsFile =
+            if cfg.settingsFile != null then cfg.settingsFile else generatedSettingsFile;
         in
         {
           options.services.process-tracker = {
@@ -88,12 +136,74 @@
               description = "Enable notifications when the service fails. Requires libnotify to be installed.";
             };
 
-            # Extra service options (if needed)
-            # serviceConfig = lib.mkOption {
-            #   type = lib.types.attrs;
-            #   default = {};
-            #   description = "Extra configuration options for the process tracker systemd unit.";
-            # };
+            settingsFilePath = lib.mkOption {
+              type = lib.types.path;
+              readOnly = true;
+              default = effectiveSettingsFile;
+              description = "Path to the process-tracker appsettings JSON file in the Nix store.";
+            };
+
+            settingsFile = lib.mkOption {
+              type = lib.types.nullOr lib.types.path;
+              default = null;
+              description = ''
+                Full path to the main appsettings JSON file.
+
+                If null, the module generates a non-secret appsettings.json automatically
+                from the other module options.
+              '';
+            };
+
+            logging = {
+              logLevel = lib.mkOption {
+                type = lib.types.str;
+                default = "Information";
+                description = "Default logging level written into the generated appsettings.json.";
+              };
+
+              database = lib.mkOption {
+                type = lib.types.str;
+                default = "Warning";
+                description = "Database logging level written into the generated appsettings.json.";
+              };
+            };
+
+            port = lib.mkOption {
+              type = lib.types.int;
+              default = 8001;
+              description = "HTTP port for the process tracker API.";
+            };
+
+            dateTimeFormat = lib.mkOption {
+              type = lib.types.str;
+              default = "yyyy-MM-dd HH:mm";
+              description = "Date and time format used in the API responses.";
+            };
+
+            dateFormat = lib.mkOption {
+              type = lib.types.str;
+              default = "yyyy-MM-dd";
+              description = "Date format used in the API responses.";
+            };
+
+            processCheckDelay = lib.mkOption {
+              type = lib.types.int;
+              default = 20;
+              description = "Delay in seconds between process checks.";
+            };
+
+            cushionDelay = lib.mkOption {
+              type = lib.types.int;
+              default = 60;
+              description = "Additional delay in seconds added to process check delay to account for timing issues.";
+            };
+
+            databasePath = lib.mkOption {
+              type = lib.types.str;
+              default = "${config.xdg.dataHome}/processtracker/processtracker.db";
+              description = "File path for the process tracker SQLite database.";
+            };
+
           };
 
           # Install the packages and create a systemd service
@@ -101,6 +211,7 @@
             home.packages = [
               cfg.package
               self.packages.${system}.process-tracker-cli
+              processTrackerUpdateScript
             ];
 
             systemd.user.services.process-tracker = {
@@ -113,9 +224,12 @@
               Service = {
                 ExecStart = "${lib.getExe' cfg.package "processtracker"}";
                 Restart = "on-failure";
+                Environment = [
+                  "PROCESSTRACKER_APPSETTINGS_PATH=${effectiveSettingsFile}"
+                ];
               };
 
-              Install.WantedBy = [ "default.target" ];
+              Install.WantedBy = [ "graphical-session.target" ];
             };
 
             systemd.user.services.process-tracker-notify = lib.mkIf cfg.notifyOnFailure {
