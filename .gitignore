@@ -364,5 +364,8 @@ FodyWeavers.xsd
 ProcessTrackerService/Database/processtracker.db*
 
 # nix specific
-result
 nuget-restore
+.direnv
+/result
+output/
+.codex
