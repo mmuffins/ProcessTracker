@@ -229,7 +229,7 @@
                 ];
               };
 
-              Install.WantedBy = [ "default.target" ];
+              Install.WantedBy = [ "graphical-session.target" ];
             };
 
             systemd.user.services.process-tracker-notify = lib.mkIf cfg.notifyOnFailure {
