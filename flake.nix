@@ -21,6 +21,25 @@
       pkgs = import nixpkgs { inherit system; };
       appVersion = "1.0.1931";
       dotnetVersion = "10_0";
+      makeProcessTrackerUpdateScript =
+        port:
+        pkgs.writeShellScriptBin "process-tracker-update" ''
+          set -eu
+
+          if [ "$#" -ne 2 ]; then
+            echo "usage: process-tracker-update <start-date> <end-date>" >&2
+            exit 1
+          fi
+
+          start_date="$1"
+          end_date="$2"
+
+          json_body=$(printf '{"StartDate": "%s", "EndDate": "%s"}' "$start_date" "$end_date")
+          response=$(${pkgs.curl}/bin/curl -s -X POST -H "Content-Type: application/json" -d "$json_body" "http://localhost:${toString port}/api/Summarize")
+          success=$(echo "$response" | ${pkgs.jq}/bin/jq -r '.Success')
+          statuscode=$(echo "$response" | ${pkgs.jq}/bin/jq -r '.StatusCode')
+          echo "result: $success ($statuscode)"
+        '';
     in
     {
       inherit system;
@@ -57,6 +76,7 @@
           executables = [ "processtracker" ];
         };
         process-tracker-cli = inputs.process-tracker-cli.packages.${system}.process-tracker-cli;
+        process-tracker-update = makeProcessTrackerUpdateScript 8001;
       };
 
       defaultPackage."${system}" = self.packages."${system}".process-tracker;
@@ -70,6 +90,7 @@
         }:
         let
           cfg = config.services.process-tracker;
+          processTrackerUpdateScript = makeProcessTrackerUpdateScript cfg.port;
 
           generatedSettingsFile = pkgs.writeText "process-tracker.json" (
             builtins.toJSON {
@@ -187,6 +208,7 @@
             home.packages = [
               cfg.package
               self.packages.${system}.process-tracker-cli
+              processTrackerUpdateScript
             ];
 
             systemd.user.services.process-tracker = {
