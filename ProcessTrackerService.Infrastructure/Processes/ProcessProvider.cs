@@ -5,6 +5,8 @@ using ProcessTrackerService.Core.Interfaces;
 
 namespace ProcessTrackerService.Infrastructure.Processes;
 
+#nullable enable
+
 public sealed class ProcessProvider : IProcessProvider
 {
     public IReadOnlyList<ProcessViewModel> GetProcesses()
@@ -42,12 +44,12 @@ public sealed class ProcessProvider : IProcessProvider
 
     private ProcessViewModel CreateWindowsProcessViewModel(Process process)
     {
-        var mainModule = process.MainModule;
+        var mainModule = GetMainModule(process);
         return new ProcessViewModel
         {
             Name = process.ProcessName,
             MainWindowTitle = process.MainWindowTitle,
-            Description = mainModule?.FileVersionInfo.FileDescription,
+            Description = GetFileDescription(mainModule),
             Path = mainModule?.FileName,
             CommandLine = null
         };
@@ -55,7 +57,7 @@ public sealed class ProcessProvider : IProcessProvider
 
     private ProcessViewModel CreateLinuxProcessViewModel(Process process)
     {
-        var mainModule = process.MainModule;
+        var mainModule = GetMainModule(process);
         string? commandLine = null;
         if (ShouldGetCommandLine(process))
         {
@@ -67,10 +69,32 @@ public sealed class ProcessProvider : IProcessProvider
         {
             Name = process.ProcessName,
             MainWindowTitle = process.MainWindowTitle,
-            Description = mainModule?.FileVersionInfo.FileDescription,
+            Description = GetFileDescription(mainModule),
             Path = mainModule?.FileName,
             CommandLine = commandLine
         };
+    }
+
+    private ProcessModule? GetMainModule(Process process)
+    {
+        try
+        {
+            return process.MainModule;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private string? GetFileDescription(ProcessModule? mainModule)
+    {
+        if (mainModule?.FileName == null || !File.Exists(mainModule.FileName))
+        {
+            return null;
+        }
+
+        return mainModule.FileVersionInfo.FileDescription;
     }
 
     private bool ShouldGetCommandLine(Process process)
