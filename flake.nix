@@ -19,7 +19,7 @@
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
-      appVersion = "1.0.2031";
+      appVersion = "1.0.2071";
       dotnetVersion = "10_0";
       makeProcessTrackerUpdateScript =
         port:
